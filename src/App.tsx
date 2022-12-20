@@ -1,12 +1,13 @@
 import React from "react";
 import "./styles/App.css";
+import { Button } from "./ui/Button";
 
 function App() {
   return (
     <div className="App">
-      <p className="text-3xl underline text-blue-600">
-        Welcome to the Grad Proj.
-      </p>
+      <Button size="xlarge" bending="high">
+        faruk
+      </Button>
     </div>
   );
 }
