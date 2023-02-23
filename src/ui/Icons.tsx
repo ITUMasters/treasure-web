@@ -9,19 +9,35 @@ type IconProps = {
   icon: IconTypes;
   width: string;
   height: string;
+  onIconClick?: () => void;
 };
-export function Icons({ icon, width, height }: IconProps) {
-  console.log(width);
+export function Icons({ icon, width, height, onIconClick }: IconProps) {
   switch (icon) {
     case "mailbox":
-      return <MailboxIcon width={width} height={height} />;
+      return (
+        <button onClick={onIconClick}>
+          <MailboxIcon width={width} height={height} />
+        </button>
+      );
 
     case "eyeOn":
-      return <EyeOnIcon width={width} height={height} />;
+      return (
+        <button onClick={onIconClick}>
+          <EyeOnIcon width={width} height={height} />
+        </button>
+      );
 
     case "eyeOff":
-      return <EyeOffIcon width={width} height={height} />;
+      return (
+        <button onClick={onIconClick}>
+          <EyeOffIcon width={width} height={height} />
+        </button>
+      );
     default:
-      return <MailboxIcon width={width} height={height} />;
+      return (
+        <button onClick={onIconClick}>
+          <MailboxIcon width={width} height={height} />
+        </button>
+      );
   }
 }
