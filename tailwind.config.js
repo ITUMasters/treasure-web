@@ -14,6 +14,7 @@ module.exports = {
         darkPurple: "#02153A",
         gray: "#E5E5E5",
         lightBlack: "#4F4F4F",
+        bgColor: "#02153A",
       },
     },
   },
