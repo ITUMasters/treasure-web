@@ -16,6 +16,7 @@ export function Button({
   disabled,
   size = "large",
   bending = "low",
+  ...props
 }: ButtonProps) {
   const buttonProps = ButtonProperties({
     bending,
@@ -26,8 +27,9 @@ export function Button({
     <button
       disabled={disabled}
       className={`bg-lightPurple w-full ${buttonProps.height} ${buttonProps.radius}`}
+      {...props}
     >
-      <p className={`text-white text-xl`}>{children}</p>
+      <p className={`text-white text-l`}>{children}</p>
     </button>
   );
 }

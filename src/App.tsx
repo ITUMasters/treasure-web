@@ -1,9 +1,9 @@
 import React from "react";
 import "./styles/App.css";
-import { MainPage } from "./pages/MainPage";
+import { TreasureCreationPage } from "./pages/TreasureCreationPage";
 
 function App() {
-  return <MainPage />;
+  return <TreasureCreationPage />;
 }
 
 export default App;
