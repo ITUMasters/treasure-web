@@ -1,20 +1,22 @@
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "../ui/Input";
 import { Checkbox } from "../ui/Checkbox";
 import { Button } from "../ui/Button";
 import ImageUploading, { ImageListType } from "react-images-uploading";
+import { useNavigate } from "react-router-dom";
+import { PATHS } from "../consts/paths";
+import {
+  useSetTreasure,
+  useTreasure,
+} from "../recoil-store/treasureStoreHooks";
 
 export function TreasureCreationPage() {
-  const [hardness, setHardness] = useState("easy");
-  const [treasureName, setTreasureName] = useState("");
-  const [regionName, setRegionName] = useState("");
-  const [hint1, setHint1] = useState("");
-  const [hint2, setHint2] = useState("");
-  const [hint3, setHint3] = useState("");
-  const [images, setImages] = useState<any[]>([]);
+  const navigate = useNavigate();
+  const treasure = useTreasure();
+  const setTreasure = useSetTreasure();
 
   const onChange = (imageList: ImageListType) => {
-    setImages(imageList as never[]);
+    setTreasure({ ...treasure, images: imageList as never[] });
   };
 
   return (
@@ -33,77 +35,95 @@ export function TreasureCreationPage() {
           <div className="w-80 mt-6">
             <Input
               title="Treasure Name"
-              value={treasureName}
+              value={treasure.name}
               onChange={(e) => {
-                setTreasureName(e.target.value);
+                setTreasure({ ...treasure, name: e.target.value });
               }}
             />
           </div>
           <div className="w-80 mt-4">
             <Input
               title="Restricted Region Name"
-              value={regionName}
-              onChange={(e) => setRegionName(e.target.value)}
+              value={treasure.regionName}
+              onChange={(e) =>
+                setTreasure({ ...treasure, regionName: e.target.value })
+              }
             />
           </div>
           <p className="text-white mt-2">Choose difficulty:</p>
           <div className="flex flex-row mt-1">
             <div>
               <Checkbox
-                checked={hardness === "easy"}
+                checked={treasure.difficulty === "easy"}
                 color="green"
-                onClick={() => setHardness("easy")}
+                onClick={() => setTreasure({ ...treasure, difficulty: "easy" })}
               />
             </div>
             <div className="ml-2">
               <Checkbox
-                checked={hardness === "medium"}
+                checked={treasure.difficulty === "medium"}
                 color="orange"
-                onClick={() => setHardness("medium")}
+                onClick={() =>
+                  setTreasure({ ...treasure, difficulty: "medium" })
+                }
               />
             </div>
             <div className="ml-2">
               <Checkbox
-                checked={hardness === "hard"}
+                checked={treasure.difficulty === "hard"}
                 color="red"
-                onClick={() => setHardness("hard")}
+                onClick={() => setTreasure({ ...treasure, difficulty: "hard" })}
               />
             </div>
           </div>
-          <div className="w-60 mt-4">
-            <Button size="xlarge">Submit Original Coordinate</Button>
+          {treasure.coordinate.lat !== 0 && (
+            <p className="text-white w-full mt-2">
+              Latitude: {treasure.coordinate.lat} Longitude:{" "}
+              {treasure.coordinate.lng}
+            </p>
+          )}
+          <div className="w-52 mt-4">
+            <Button size="large" onClick={() => navigate(PATHS.MAP)}>
+              Select Coordinate
+            </Button>
           </div>
           <div className="w-80 mt-4">
             <Input
               title="Hint 1"
-              value={hint1}
-              onChange={(e) => setHint1(e.target.value)}
+              value={treasure.hint1}
+              onChange={(e) =>
+                setTreasure({ ...treasure, hint1: e.target.value })
+              }
             />
           </div>
           <div className="w-80 mt-4">
             <Input
               title="Hint 2 (optional)"
-              value={hint2}
-              onChange={(e) => setHint2(e.target.value)}
+              value={treasure.hint2}
+              onChange={(e) =>
+                setTreasure({ ...treasure, hint2: e.target.value })
+              }
             />
           </div>
           <div className="w-80 mt-4 mb-4">
             <Input
               title="Hint 3 (optional)"
-              value={hint3}
-              onChange={(e) => setHint3(e.target.value)}
+              value={treasure.hint3}
+              onChange={(e) =>
+                setTreasure({ ...treasure, hint3: e.target.value })
+              }
             />
           </div>
         </div>
       </div>
       <div className="flex flex-col justify-center flex-1 items-center">
-        <ImageUploading value={images} onChange={onChange}>
+        <ImageUploading value={treasure.images} onChange={onChange}>
           {({ onImageUpload, isDragging, dragProps }) => (
             <div {...dragProps}>
               <img
                 src={
-                  images.length > 0 && !isDragging
-                    ? images[0].dataURL
+                  treasure.images.length > 0 && !isDragging
+                    ? treasure.images[0].dataURL
                     : require("../assets/images/imageUpload.png")
                 }
                 alt="imageUploadPlace"
@@ -114,6 +134,9 @@ export function TreasureCreationPage() {
                 <Button size="large" onClick={onImageUpload}>
                   Select or Drag Treasure Image
                 </Button>
+              </div>
+              <div className="mt-8">
+                <Button size="large">Finish Production</Button>
               </div>
             </div>
           )}
