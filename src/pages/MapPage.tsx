@@ -6,6 +6,12 @@ import {
 } from "@react-google-maps/api";
 import React, { useState } from "react";
 import { Button } from "../ui/Button";
+import { useNavigate } from "react-router-dom";
+import { PATHS } from "../consts/paths";
+import {
+  useSetTreasure,
+  useTreasure,
+} from "../recoil-store/treasureStoreHooks";
 
 export function MapPage() {
   const [center, setCenter] = useState({
@@ -48,6 +54,7 @@ export function MapPage() {
     { lat: 41.10803, lng: 29.02004 },
     { lat: 41.10366, lng: 29.01859 },
     { lat: 41.10182, lng: 29.02939 },
+    { lat: 41.10626, lng: 29.03089 },
     { lat: 41.10803, lng: 29.02004 },
   ]);
   const options = {
@@ -72,6 +79,9 @@ export function MapPage() {
 
   const [selectedRegion, setSelectedRegion] = useState("ITU");
   const [zoomLevel, setZoomLevel] = useState(16);
+  const navigate = useNavigate();
+  const setTreasure = useSetTreasure();
+  const treasure = useTreasure();
 
   return (
     <div className="flex items-center justify-center flex-col">
@@ -128,13 +138,20 @@ export function MapPage() {
         </GoogleMap>
       </LoadScript>
       <div className="absolute bottom-12 w-56">
-        <Button size="large" onClick={() => setCenter({ lat: 3, lng: 5 })}>
+        <Button
+          size="large"
+          onClick={() => {
+            //navigate(PATHS.TREASUREFABRICATION, {coordinate: markerPos});
+            setTreasure({ ...treasure, coordinate: markerPos });
+            navigate(PATHS.TREASUREFABRICATION);
+          }}
+        >
           Submit Treasure Coordinate
         </Button>
       </div>
       <div className="absolute top-24 right-4 w-32">
         {mockData.map((element) => (
-          <div className="mt-2">
+          <div className="mt-2" key={element.name}>
             <Button
               size="medium"
               HasFadeColor={selectedRegion !== element.name}
