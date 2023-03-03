@@ -9,6 +9,7 @@ interface ButtonProps extends ComponentPropsWithoutRef<"button"> {
   disabled?: boolean;
   size: ButtonSize;
   bending?: ButtonBending;
+  HasFadeColor?: boolean;
 }
 
 export function Button({
@@ -16,6 +17,7 @@ export function Button({
   disabled,
   size = "large",
   bending = "low",
+  HasFadeColor = false,
   ...props
 }: ButtonProps) {
   const buttonProps = ButtonProperties({
@@ -23,12 +25,11 @@ export function Button({
     size,
   });
 
+  const buttonStyle =
+    `bg-lightPurple w-full ${buttonProps.height} ${buttonProps.radius}` +
+    (HasFadeColor ? " opacity-50" : " opacity-100");
   return (
-    <button
-      disabled={disabled}
-      className={`bg-lightPurple w-full ${buttonProps.height} ${buttonProps.radius}`}
-      {...props}
-    >
+    <button disabled={disabled} className={buttonStyle} {...props}>
       <p className={`text-white text-l`}>{children}</p>
     </button>
   );
