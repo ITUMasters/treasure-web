@@ -83,12 +83,11 @@ export function MapPage() {
   const setTreasure = useSetTreasure();
   const treasure = useTreasure();
 
+  const google_maps_api_key = process.env.REACT_APP_GOOGLE_MAPS_KEY ?? "";
+
   return (
     <div className="flex items-center justify-center flex-col">
-      <LoadScript
-        id="script-loader"
-        googleMapsApiKey="AIzaSyDyvMDj2P2iK5Q43ZwZurzzhvcvLy-wvXs"
-      >
+      <LoadScript id="script-loader" googleMapsApiKey={google_maps_api_key}>
         <GoogleMap
           center={center}
           zoom={zoomLevel}
