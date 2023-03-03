@@ -12,13 +12,44 @@ export function MapPage() {
     lat: 41.10571,
     lng: 29.02525,
   });
-
-  const paths = [
+  const mockData = [
+    {
+      name: "ITU",
+      center: {
+        lat: 41.10571,
+        lng: 29.02525,
+      },
+      paths: [
+        { lat: 41.10803, lng: 29.02004 },
+        { lat: 41.10366, lng: 29.01859 },
+        { lat: 41.10182, lng: 29.02939 },
+        { lat: 41.10626, lng: 29.03089 },
+        { lat: 41.10803, lng: 29.02004 },
+      ],
+      zoomLevel: 16,
+    },
+    {
+      name: "METU",
+      center: {
+        lat: 39.89412,
+        lng: 32.77717,
+      },
+      paths: [
+        { lat: 39.90137, lng: 32.77605 },
+        { lat: 39.89696, lng: 32.79223 },
+        { lat: 39.88401, lng: 32.7773 },
+        { lat: 39.89185, lng: 32.76871 },
+        { lat: 39.90137, lng: 32.77605 },
+      ],
+      zoomLevel: 15,
+    },
+  ];
+  const [paths, setPaths] = useState([
     { lat: 41.10803, lng: 29.02004 },
     { lat: 41.10366, lng: 29.01859 },
     { lat: 41.10182, lng: 29.02939 },
     { lat: 41.10803, lng: 29.02004 },
-  ];
+  ]);
   const options = {
     strokeColor: "#9A4FE9",
     strokeOpacity: 1,
@@ -39,6 +70,9 @@ export function MapPage() {
     lng: 29.02041,
   });
 
+  const [selectedRegion, setSelectedRegion] = useState("ITU");
+  const [zoomLevel, setZoomLevel] = useState(16);
+
   return (
     <div className="flex items-center justify-center flex-col">
       <LoadScript
@@ -47,7 +81,7 @@ export function MapPage() {
       >
         <GoogleMap
           center={center}
-          zoom={16}
+          zoom={zoomLevel}
           mapContainerStyle={{
             width: "100%",
             height: "100%",
@@ -94,7 +128,29 @@ export function MapPage() {
         </GoogleMap>
       </LoadScript>
       <div className="absolute bottom-12 w-56">
-        <Button size="large">Submit Treasure Coordinate</Button>
+        <Button size="large" onClick={() => setCenter({ lat: 3, lng: 5 })}>
+          Submit Treasure Coordinate
+        </Button>
+      </div>
+      <div className="absolute top-24 right-4 w-32">
+        {mockData.map((element) => (
+          <div className="mt-2">
+            <Button
+              size="medium"
+              HasFadeColor={selectedRegion !== element.name}
+              onClick={() => {
+                setSelectedRegion(element.name);
+                setCenter(element.center);
+                setPaths(element.paths);
+                setZoomLevel(element.zoomLevel);
+                setMarkerPos(element.center);
+                setPrevMarkerPos(element.center);
+              }}
+            >
+              {element.name}
+            </Button>
+          </div>
+        ))}
       </div>
     </div>
   );
