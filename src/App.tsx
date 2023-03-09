@@ -7,6 +7,8 @@ import { TreasureCreationPage } from "./pages/TreasureCreationPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MainPage } from "./pages/MainPage";
 import { PATHS } from "./consts/paths";
+import { Createds } from "./pages/Createds";
+import { Leaderboard } from "./pages/Leaderboard";
 
 function App() {
   return (
@@ -26,8 +28,10 @@ function AppWithRecoil() {
         path={PATHS.TREASUREFABRICATION}
         element={<TreasureCreationPage />}
       />
-      <Route path={PATHS.LOGIN} element={<LoginPage />} />
+      <Route path={PATHS.LOGIN} element={<Leaderboard />} />
       <Route path={PATHS.MAINPAGE} element={<MainPage />} />
+      <Route path={PATHS.CREATEDS} element={<Createds />} />
+      <Route path={PATHS.LEADERBOARD} element={<Leaderboard />} />
       <Route path="*" element={<LoginPage />} />
     </Routes>
   );
