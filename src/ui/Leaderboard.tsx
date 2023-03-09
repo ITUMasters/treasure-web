@@ -1,10 +1,3 @@
-import {
-  ImCheckboxChecked,
-  ImCheckboxUnchecked,
-  ImConfused,
-} from "react-icons/im";
-import { Button } from "./Button";
-import { Icons } from "./Icons";
 type LeaderboardCardProps = {
   rank: number;
   name: string;
