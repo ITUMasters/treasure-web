@@ -3,6 +3,6 @@ export const PATHS = {
   MAINPAGE: "/main",
   TREASUREFABRICATION: "/treasureFabrication",
   MAP: "/map",
-  CREATEDS: "createds",
-  LEADERBOARD: "leaderboard",
+  CREATEDS: "/createds",
+  LEADERBOARD: "/leaderboard",
 };

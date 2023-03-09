@@ -1,8 +1,3 @@
-import {
-  ImCheckboxChecked,
-  ImCheckboxUnchecked,
-  ImConfused,
-} from "react-icons/im";
 import { Button } from "./Button";
 import { Icons } from "./Icons";
 type CreatedTreasureCardProps = {
@@ -18,9 +13,9 @@ export function CreatedTreasureCard({
   timeLeft,
 }: CreatedTreasureCardProps) {
   var difficultyColor = "#30B526";
-  if (difficulty == "Medium") {
+  if (difficulty === "Medium") {
     difficultyColor = "#FF950F";
-  } else if (difficulty == "Hard") {
+  } else if (difficulty === "Hard") {
     difficultyColor = "#E8311A";
   }
   return (
