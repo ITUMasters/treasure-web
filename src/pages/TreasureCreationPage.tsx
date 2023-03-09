@@ -135,7 +135,7 @@ export function TreasureCreationPage() {
                   src={
                     treasure.images.length > 0 && !isDragging
                       ? treasure.images[0].dataURL
-                      : require("../assets/images/imageUpload.png")
+                      : require("../assets/images/Photo Placeholder.png")
                   }
                   alt="imageUploadPlace"
                   width={1183 / 4}
