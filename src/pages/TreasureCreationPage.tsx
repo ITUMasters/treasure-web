@@ -10,6 +10,7 @@ import {
   useSetTreasure,
   useTreasure,
 } from "../recoil-store/treasureStoreHooks";
+import { AiOutlineDelete } from "react-icons/ai";
 
 export function TreasureCreationPage() {
   const navigate = useNavigate();
@@ -92,37 +93,59 @@ export function TreasureCreationPage() {
                 Treasure Name: {treasure.coordinate.name}
               </p>
             )}
-            <div className="w-52 mt-4">
+            <div className="w-52 mt-4 mb-4">
               <Button size="large" onClick={() => navigate(PATHS.MAP)}>
                 Select Coordinate
               </Button>
             </div>
-            <div className="w-80 mt-4">
-              <Input
-                title="Hint 1"
-                value={treasure.hint1}
-                onChange={(e) =>
-                  setTreasure({ ...treasure, hint1: e.target.value })
-                }
-              />
+            <div className="h-60 overflow-y-scroll scrollbar-hide">
+              {treasure.hints.map((hintName, index) => (
+                <div className="flex flex-row items-center">
+                  <div className="w-80 mt-4">
+                    <Input
+                      title={"Hint: " + (index + 1).toString()}
+                      value={hintName}
+                      onChange={(e) =>
+                        setTreasure({
+                          ...treasure,
+                          hints: [
+                            ...treasure.hints.slice(0, index),
+                            e.target.value,
+                            ...treasure.hints.slice(index + 1),
+                          ],
+                        })
+                      }
+                    />
+                  </div>
+                  <div
+                    className="ml-4 text-3xl"
+                    onClick={() => {
+                      setTreasure({
+                        ...treasure,
+                        hints: [
+                          ...treasure.hints.slice(0, index),
+                          ...treasure.hints.slice(index + 1),
+                        ],
+                      });
+                    }}
+                  >
+                    <AiOutlineDelete fill="#E8311A" />
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="w-80 mt-4">
-              <Input
-                title="Hint 2 (optional)"
-                value={treasure.hint2}
-                onChange={(e) =>
-                  setTreasure({ ...treasure, hint2: e.target.value })
-                }
-              />
-            </div>
-            <div className="w-80 mt-4 mb-4">
-              <Input
-                title="Hint 3 (optional)"
-                value={treasure.hint3}
-                onChange={(e) =>
-                  setTreasure({ ...treasure, hint3: e.target.value })
-                }
-              />
+            <div className="w-52 mt-4 mb-4">
+              <Button
+                size="large"
+                onClick={() => {
+                  setTreasure({
+                    ...treasure,
+                    hints: [...treasure.hints, ""],
+                  });
+                }}
+              >
+                Add Hint
+              </Button>
             </div>
           </div>
         </div>
