@@ -93,12 +93,12 @@ export function TreasureCreationPage() {
                 Treasure Name: {treasure.coordinate.name}
               </p>
             )}
-            <div className="w-52 mt-4 mb-4">
+            <div className="w-52 mt-4 mb-2">
               <Button size="large" onClick={() => navigate(PATHS.MAP)}>
                 Select Coordinate
               </Button>
             </div>
-            <div className="h-60 overflow-y-scroll scrollbar-hide">
+            <div className="max-h-60 overflow-y-scroll scrollbar-hide">
               {treasure.hints.map((hintName, index) => (
                 <div className="flex flex-row items-center">
                   <div className="w-80 mt-4">
