@@ -9,9 +9,7 @@ export const treasureAtom = atom<treasureAtomType>({
       lat: 0,
       lng: 0,
     },
-    hint1: "",
-    hint2: "",
-    hint3: "",
+    hints: [],
     images: [],
   },
 
@@ -23,9 +21,7 @@ export type treasureAtomType = {
   regionName: string;
   difficulty: string;
   coordinate: coordinateType;
-  hint1: string;
-  hint2: string;
-  hint3: string;
+  hints: string[];
   images: any[];
 };
 
