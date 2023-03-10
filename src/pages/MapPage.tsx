@@ -3,6 +3,7 @@ import {
   GoogleMap,
   Polyline,
   Marker,
+  InfoWindow,
 } from "@react-google-maps/api";
 import React, { useState } from "react";
 import { Button } from "../ui/Button";
@@ -12,7 +13,9 @@ import {
   useSetTreasure,
   useTreasure,
 } from "../recoil-store/treasureStoreHooks";
+import { Input } from "../ui/Input";
 
+//TODO: There is type error regarding to InfoWindow (I could not solved yet!)
 export function MapPage() {
   const [center, setCenter] = useState({
     lat: 41.10571,
@@ -84,11 +87,19 @@ export function MapPage() {
   const treasure = useTreasure();
 
   const google_maps_api_key = process.env.REACT_APP_GOOGLE_MAPS_KEY ?? "";
+  const [InfoWindowOffset, setInfoWindowOffset] = useState(null as any);
+  const [infoWindow, setInfoWindow] = useState(null as any);
+  const [marker, setMarker] = useState(null as any);
+  const [mapInstance, setMapInstace] = useState(null as any);
+  const [caption, setCaption] = useState("My Treasure");
 
   return (
     <div className="flex items-center justify-center flex-col">
       <LoadScript id="script-loader" googleMapsApiKey={google_maps_api_key}>
         <GoogleMap
+          onLoad={(e) => {
+            setMapInstace(e);
+          }}
           center={center}
           zoom={zoomLevel}
           mapContainerStyle={{
@@ -106,8 +117,14 @@ export function MapPage() {
         >
           <Polyline path={paths} options={options} />
           <Marker
+            onLoad={(e) => setMarker(e)}
             position={markerPos}
             draggable={true}
+            onClick={() => {
+              if (infoWindow !== null && infoWindow !== undefined) {
+                infoWindow.open(mapInstance, marker);
+              }
+            }}
             onDragStart={(pos) => {
               const coord = pos.latLng;
               if (coord !== null) {
@@ -133,15 +150,34 @@ export function MapPage() {
                 }
               }
             }}
-          />
+          >
+            <InfoWindow
+              position={markerPos}
+              onLoad={(e) => {
+                setInfoWindow(e);
+                setInfoWindowOffset(new window.google.maps.Size(0, -5));
+              }}
+              options={{ pixelOffset: InfoWindowOffset }}
+            >
+              <div className="w-32 h-8 flex items-center justify-center font-bold">
+                <p className="text-black text-center text-l ">{caption}</p>
+              </div>
+            </InfoWindow>
+          </Marker>
         </GoogleMap>
       </LoadScript>
       <div className="absolute bottom-12 w-56">
         <Button
           size="large"
           onClick={() => {
-            //navigate(PATHS.TREASUREFABRICATION, {coordinate: markerPos});
-            setTreasure({ ...treasure, coordinate: markerPos });
+            setTreasure({
+              ...treasure,
+              coordinate: {
+                name: caption,
+                lat: markerPos.lat,
+                lng: markerPos.lng,
+              },
+            });
             navigate(PATHS.TREASUREFABRICATION);
           }}
         >
@@ -167,6 +203,14 @@ export function MapPage() {
             </Button>
           </div>
         ))}
+      </div>
+      <div className="w-64 left-4 absolute top-20">
+        <Input
+          title="Caption"
+          value={caption}
+          border={true}
+          onChange={(e) => setCaption(e.target.value)}
+        />
       </div>
     </div>
   );

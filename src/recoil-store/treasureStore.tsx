@@ -5,6 +5,7 @@ export const treasureAtom = atom<treasureAtomType>({
     regionName: "",
     difficulty: "easy",
     coordinate: {
+      name: "My Treasure",
       lat: 0,
       lng: 0,
     },
@@ -29,6 +30,7 @@ export type treasureAtomType = {
 };
 
 type coordinateType = {
+  name: string;
   lat: number;
   lng: number;
 };

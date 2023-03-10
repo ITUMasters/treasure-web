@@ -7,6 +7,7 @@ interface InputProps extends ComponentPropsWithoutRef<"input"> {
   iconHeight?: string;
   onIconClick?: () => void;
   title: string;
+  border?: boolean;
 }
 export function Input({
   icon,
@@ -14,12 +15,16 @@ export function Input({
   iconHeight,
   onIconClick,
   title,
+  border,
   ...props
 }: InputProps) {
   return (
     <div className="flex flex-row relative">
       <input
-        className="bg-gray w-full h-16 rounded-lg pl-2 pt-2 focus:outline-none"
+        className={
+          "bg-gray w-full h-16 rounded-lg pl-2 pt-2 focus:outline-none" +
+          (border ? " border-2 border-lightPurple" : "")
+        }
         {...props}
       />
       <p className="absolute mt-1 pl-2 text-sm text-lightBlack">{title}</p>

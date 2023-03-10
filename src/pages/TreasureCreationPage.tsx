@@ -57,7 +57,7 @@ export function TreasureCreationPage() {
                 }
               />
             </div>
-            <p className="text-white mt-2">Choose difficulty:</p>
+            <p className="text-white mt-2 font-bold">Choose difficulty:</p>
             <div className="flex flex-row mt-1">
               <div>
                 <Checkbox
@@ -88,9 +88,8 @@ export function TreasureCreationPage() {
               </div>
             </div>
             {treasure.coordinate.lat !== 0 && (
-              <p className="text-white w-full mt-2">
-                Latitude: {treasure.coordinate.lat} Longitude:{" "}
-                {treasure.coordinate.lng}
+              <p className="text-white w-full mt-2 font-bold">
+                Treasure Name: {treasure.coordinate.name}
               </p>
             )}
             <div className="w-52 mt-4">
