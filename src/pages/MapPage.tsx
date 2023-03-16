@@ -14,6 +14,8 @@ import {
   useTreasure,
 } from "../recoil-store/treasureStoreHooks";
 import { Input } from "../ui/Input";
+import { GeoJSONToPolyLine } from "../utils/GeoJSONToPolyLine";
+import { PolyLineCoordinates } from "../consts/PolyLineCoordinates";
 
 //TODO: There is type error regarding to InfoWindow (I could not solved yet!)
 export function MapPage() {
@@ -21,6 +23,11 @@ export function MapPage() {
     lat: 41.10571,
     lng: 29.02525,
   });
+  const ituPath = GeoJSONToPolyLine(PolyLineCoordinates.ITU);
+  const metuPath = GeoJSONToPolyLine(PolyLineCoordinates.METU);
+  const tobbPath = GeoJSONToPolyLine(PolyLineCoordinates.TOBB);
+  const bilkentPath = GeoJSONToPolyLine(PolyLineCoordinates.Bilkent);
+
   const mockData = [
     {
       name: "ITU",
@@ -28,38 +35,39 @@ export function MapPage() {
         lat: 41.10571,
         lng: 29.02525,
       },
-      paths: [
-        { lat: 41.10803, lng: 29.02004 },
-        { lat: 41.10366, lng: 29.01859 },
-        { lat: 41.10182, lng: 29.02939 },
-        { lat: 41.10626, lng: 29.03089 },
-        { lat: 41.10803, lng: 29.02004 },
-      ],
-      zoomLevel: 16,
+      paths: ituPath,
+      zoomLevel: 15,
     },
     {
       name: "METU",
       center: {
-        lat: 39.89412,
-        lng: 32.77717,
+        lat: 39.88252,
+        lng: 32.77875,
       },
-      paths: [
-        { lat: 39.90137, lng: 32.77605 },
-        { lat: 39.89696, lng: 32.79223 },
-        { lat: 39.88401, lng: 32.7773 },
-        { lat: 39.89185, lng: 32.76871 },
-        { lat: 39.90137, lng: 32.77605 },
-      ],
-      zoomLevel: 15,
+      paths: metuPath,
+      zoomLevel: 13,
+    },
+    {
+      name: "TOBB",
+      center: {
+        lat: 39.92133,
+        lng: 32.7983,
+      },
+      paths: tobbPath,
+      zoomLevel: 16,
+    },
+    {
+      name: "Bilkent",
+      center: {
+        lat: 39.86539,
+        lng: 32.7443,
+      },
+      paths: bilkentPath,
+      zoomLevel: 14,
     },
   ];
-  const [paths, setPaths] = useState([
-    { lat: 41.10803, lng: 29.02004 },
-    { lat: 41.10366, lng: 29.01859 },
-    { lat: 41.10182, lng: 29.02939 },
-    { lat: 41.10626, lng: 29.03089 },
-    { lat: 41.10803, lng: 29.02004 },
-  ]);
+  const [paths, setPaths] = useState(ituPath);
+  console.log(paths);
   const options = {
     strokeColor: "#9A4FE9",
     strokeOpacity: 1,
@@ -81,7 +89,7 @@ export function MapPage() {
   });
 
   const [selectedRegion, setSelectedRegion] = useState("ITU");
-  const [zoomLevel, setZoomLevel] = useState(16);
+  const [zoomLevel, setZoomLevel] = useState(15);
   const navigate = useNavigate();
   const setTreasure = useSetTreasure();
   const treasure = useTreasure();
