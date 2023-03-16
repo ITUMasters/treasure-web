@@ -9,7 +9,7 @@ export const treasureAtom = atom<treasureAtomType>({
       lat: 0,
       lng: 0,
     },
-    hints: [],
+    hints: [""],
     images: [],
   },
 
