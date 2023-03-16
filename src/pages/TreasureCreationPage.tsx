@@ -120,16 +120,20 @@ export function TreasureCreationPage() {
                   <div
                     className="ml-4 text-3xl"
                     onClick={() => {
-                      setTreasure({
-                        ...treasure,
-                        hints: [
-                          ...treasure.hints.slice(0, index),
-                          ...treasure.hints.slice(index + 1),
-                        ],
-                      });
+                      if (treasure.hints.length > 1) {
+                        setTreasure({
+                          ...treasure,
+                          hints: [
+                            ...treasure.hints.slice(0, index),
+                            ...treasure.hints.slice(index + 1),
+                          ],
+                        });
+                      }
                     }}
                   >
-                    <AiOutlineDelete fill="#E8311A" />
+                    {treasure.hints.length >= 2 && (
+                      <AiOutlineDelete fill="#E8311A" />
+                    )}
                   </div>
                 </div>
               ))}
