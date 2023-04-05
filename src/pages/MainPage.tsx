@@ -4,12 +4,15 @@ import { useNavigate } from "react-router-dom";
 import { PATHS } from "../consts/paths";
 import Background from "../assets/images/iconicBG.png";
 import { useSetAuth } from "../recoil-store/auth/AuthStoreHooks";
-import { useSetId } from "../recoil-store/auth/IdStoreHooks";
+import { useId, useSetId } from "../recoil-store/auth/IdStoreHooks";
+import { useUser } from "../react-query/hooks";
+import ReactLoading from "react-loading";
 
 export function MainPage() {
   const navigate = useNavigate();
   const setAuth = useSetAuth();
   const setId = useSetId();
+  const userId = useId();
 
   const logout = () => {
     setId(0);
@@ -17,6 +20,21 @@ export function MainPage() {
     localStorage.removeItem("access_token");
     localStorage.removeItem("remember_me");
   };
+
+  const { user, isFetching } = useUser(userId);
+  if (isFetching) {
+    return (
+      <div className="flex justify-center mt-40 ">
+        <ReactLoading
+          type="spinningBubbles"
+          color={"#5B3DF6"}
+          height={"15%"}
+          width={"15%"}
+        />
+      </div>
+    );
+  }
+  console.log(user);
 
   return (
     <div className="bg-bgColor h-screen flex flex-col">
@@ -33,7 +51,9 @@ export function MainPage() {
             width={186}
             height={140}
           />
-          <p className="text-white text-5xl ml-12">Welcome Alp Kartal</p>
+          <p className="text-white text-5xl ml-12">
+            Welcome {user.name + " " + user.surname}
+          </p>
           <div className="flex flex-row grow mr-20 justify-end">
             <div className="w-20">
               <Button size="small" onClick={logout}>

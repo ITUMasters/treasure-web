@@ -22,7 +22,7 @@ function App() {
       <RecoilRoot>
         <BrowserRouter>
           <AppWithRecoil />
-          <ToastContainer draggable theme={"light"} />
+          <ToastContainer draggable theme={"dark"} />
         </BrowserRouter>
       </RecoilRoot>
     </QueryClientProvider>

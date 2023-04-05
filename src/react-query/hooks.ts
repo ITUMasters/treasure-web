@@ -1,5 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiGetUser, apiLogin } from "./queries";
+import {
+  apiCreateLocation,
+  apiCreateTreasure,
+  apiGetUser,
+  apiLogin,
+} from "./queries";
 import { QUERY_KEYS } from "./queryKeys";
 import { User } from "./types";
 
@@ -33,4 +38,34 @@ export const useUser = (userId: number) => {
   });
   const user: User = data?.data;
   return { user: user, ...rest };
+};
+
+export const useLocationInfoSubmitMutation = ({
+  onSuccess,
+  onError,
+}: CustomMutationProps = {}) => {
+  return useMutation({
+    mutationFn: apiCreateLocation,
+    onSuccess: (data) => {
+      onSuccess?.(data);
+    },
+    onError: (err) => {
+      onError?.(err);
+    },
+  });
+};
+
+export const useTreasureSubmissionMutation = ({
+  onSuccess,
+  onError,
+}: CustomMutationProps = {}) => {
+  return useMutation({
+    mutationFn: apiCreateTreasure,
+    onSuccess: (data) => {
+      onSuccess?.(data);
+    },
+    onError: (err) => {
+      onError?.(err);
+    },
+  });
 };
