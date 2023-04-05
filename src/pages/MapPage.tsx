@@ -37,6 +37,7 @@ export function MapPage() {
       },
       paths: ituPath,
       zoomLevel: 15,
+      regionId: 7,
     },
     {
       name: "METU",
@@ -46,6 +47,7 @@ export function MapPage() {
       },
       paths: metuPath,
       zoomLevel: 13,
+      regionId: 25,
     },
     {
       name: "TOBB",
@@ -55,6 +57,7 @@ export function MapPage() {
       },
       paths: tobbPath,
       zoomLevel: 16,
+      regionId: -1,
     },
     {
       name: "Bilkent",
@@ -64,10 +67,10 @@ export function MapPage() {
       },
       paths: bilkentPath,
       zoomLevel: 14,
+      regionId: -1,
     },
   ];
   const [paths, setPaths] = useState(ituPath);
-  console.log(paths);
   const options = {
     strokeColor: "#9A4FE9",
     strokeOpacity: 1,
@@ -89,6 +92,7 @@ export function MapPage() {
   });
 
   const [selectedRegion, setSelectedRegion] = useState("ITU");
+  const [selectedRegionId, setSelectedRegionId] = useState(7); //TODO: Suan default itu region idsini donuyorum.
   const [zoomLevel, setZoomLevel] = useState(15);
   const navigate = useNavigate();
   const setTreasure = useSetTreasure();
@@ -184,6 +188,7 @@ export function MapPage() {
                 name: caption,
                 lat: markerPos.lat,
                 lng: markerPos.lng,
+                regionId: selectedRegionId,
               },
             });
             navigate(PATHS.TREASUREFABRICATION);
@@ -205,6 +210,7 @@ export function MapPage() {
                 setZoomLevel(element.zoomLevel);
                 setMarkerPos(element.center);
                 setPrevMarkerPos(element.center);
+                setSelectedRegionId(element.regionId);
               }}
             >
               {element.name}
