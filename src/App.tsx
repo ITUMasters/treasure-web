@@ -22,7 +22,7 @@ function App() {
       <RecoilRoot>
         <BrowserRouter>
           <AppWithRecoil />
-          <ToastContainer draggable theme={"light"} />
+          <ToastContainer draggable theme={"dark"} />
         </BrowserRouter>
       </RecoilRoot>
     </QueryClientProvider>
@@ -31,7 +31,6 @@ function App() {
 
 function AppWithRecoil() {
   const auth = useAuth();
-  console.log(auth);
   return (
     <Routes>
       {!auth && <Route path={PATHS.LOGIN} element={<LoginPage />} />}

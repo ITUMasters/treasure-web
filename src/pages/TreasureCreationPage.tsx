@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Input } from "../ui/Input";
 import { Checkbox } from "../ui/Checkbox";
 import { Button } from "../ui/Button";
@@ -11,16 +11,126 @@ import {
   useTreasure,
 } from "../recoil-store/treasureStoreHooks";
 import { AiOutlineDelete } from "react-icons/ai";
+import {
+  useHintCreationMutation,
+  useLocationInfoSubmitMutation,
+  useTreasureSubmissionMutation,
+} from "../react-query/hooks";
+import { formatError } from "../utils/formatError";
+import { useNotify } from "../hooks/useNotify";
+import { useId } from "../recoil-store/auth/IdStoreHooks";
+import { Hardness } from "../react-query/types";
+import { hint } from "../recoil-store/treasureStore";
+import Loading from "react-loading";
 
 export function TreasureCreationPage() {
   const navigate = useNavigate();
   const treasure = useTreasure();
   const setTreasure = useSetTreasure();
+  const notify = useNotify();
+  const userId = useId();
 
   const onChange = (imageList: ImageListType) => {
     setTreasure({ ...treasure, images: imageList as never[] });
   };
 
+  const isButtonDisabled = useMemo(() => {
+    const c1 = treasure.name.trim() === "";
+    let c2 = false;
+    for (let i = 0; i < treasure.hints.length; i++) {
+      const thisHint = treasure.hints[i];
+      if (
+        thisHint.content.trim() === "" ||
+        (i !== 0 && thisHint.cost.trim() === "") ||
+        (!Number.isInteger(parseInt(thisHint.cost)) && i !== 0) ||
+        thisHint.cost.indexOf(" ") >= 0
+      ) {
+        c2 = true;
+        break;
+      }
+    }
+    const c3 = treasure.coordinate.regionId === -1;
+    return c1 || c2 || c3;
+  }, [treasure]);
+
+  const completeTreasure = () => {
+    if (!HintCreationMutation.isLoading) {
+      navigate(PATHS.MAINPAGE);
+    }
+  };
+
+  const HintCreationMutation = useHintCreationMutation({
+    onSuccess: (res) => {
+      completeTreasure();
+    },
+    onError: (error) => {
+      const err = formatError(error);
+      if (err) {
+        notify.error("Hint Creation Fail\n" + err);
+      }
+    },
+  });
+
+  const createHint = (treasureId: number, hint: hint, isDefault: boolean) => {
+    HintCreationMutation.mutate({
+      treasureId: treasureId,
+      content: hint.content,
+      cost: isDefault ? 0 : parseInt(hint.cost),
+      isDefault: isDefault,
+    });
+  };
+  const TreasureSubmissionMutation = useTreasureSubmissionMutation({
+    onSuccess: (res) => {
+      const createdTreasureId = res.data.id;
+      for (let i = 0; i < treasure.hints.length; i++) {
+        createHint(createdTreasureId, treasure.hints[i], i === 0);
+      }
+    },
+    onError: (error) => {
+      const err = formatError(error);
+      if (err) {
+        notify.error("Treasure Creation Fail\n" + err);
+      }
+    },
+  });
+
+  const submitTreasure = (locationId: number) => {
+    TreasureSubmissionMutation.mutate({
+      locationId: locationId,
+      hardness: treasure.difficulty as Hardness,
+      name: treasure.name,
+      ownerId: userId,
+      timeLimit: 60,
+    });
+  };
+
+  const LocationInfoSubmitMutation = useLocationInfoSubmitMutation({
+    onSuccess: (res) => {
+      submitTreasure(res.data.id);
+    },
+    onError: (error) => {
+      const err = formatError(error);
+      if (err) {
+        notify.error("LocationInfo Submission is failed\n" + err);
+      }
+    },
+  });
+
+  const submitLocationInfo = () => {
+    LocationInfoSubmitMutation.mutate({
+      regionId: treasure.coordinate.regionId,
+      altitude: 1,
+      longitude: treasure.coordinate.lng,
+      latitude: treasure.coordinate.lat,
+    });
+  };
+  if (
+    HintCreationMutation.isLoading ||
+    LocationInfoSubmitMutation.isLoading ||
+    TreasureSubmissionMutation.isLoading
+  ) {
+    return <Loading />;
+  }
   return (
     <div className="bg-bgColor flex flex-row min-h-screen">
       <div
@@ -47,15 +157,6 @@ export function TreasureCreationPage() {
                 onChange={(e) => {
                   setTreasure({ ...treasure, name: e.target.value });
                 }}
-              />
-            </div>
-            <div className="w-80 mt-4">
-              <Input
-                title="Restricted Region Name"
-                value={treasure.regionName}
-                onChange={(e) =>
-                  setTreasure({ ...treasure, regionName: e.target.value })
-                }
               />
             </div>
             <p className="text-white mt-2 font-bold">Choose difficulty:</p>
@@ -104,19 +205,43 @@ export function TreasureCreationPage() {
                   <div className="w-80 mt-4">
                     <Input
                       title={"Hint: " + (index + 1).toString()}
-                      value={hintName}
+                      value={hintName.content}
                       onChange={(e) =>
                         setTreasure({
                           ...treasure,
                           hints: [
                             ...treasure.hints.slice(0, index),
-                            e.target.value,
+                            {
+                              content: e.target.value,
+                              cost: treasure.hints[index].cost,
+                            },
                             ...treasure.hints.slice(index + 1),
                           ],
                         })
                       }
                     />
                   </div>
+                  {index !== 0 && (
+                    <div className="w-24 mt-4 ml-4">
+                      <Input
+                        title="Hint Cost"
+                        value={hintName.cost.toString()}
+                        onChange={(e) =>
+                          setTreasure({
+                            ...treasure,
+                            hints: [
+                              ...treasure.hints.slice(0, index),
+                              {
+                                content: treasure.hints[index].content,
+                                cost: e.target.value,
+                              },
+                              ...treasure.hints.slice(index + 1),
+                            ],
+                          })
+                        }
+                      />
+                    </div>
+                  )}
                   <div
                     className="ml-4 text-3xl"
                     onClick={() => {
@@ -144,7 +269,7 @@ export function TreasureCreationPage() {
                 onClick={() => {
                   setTreasure({
                     ...treasure,
-                    hints: [...treasure.hints, ""],
+                    hints: [...treasure.hints, { content: "", cost: "" }],
                   });
                 }}
               >
@@ -173,7 +298,14 @@ export function TreasureCreationPage() {
                   </Button>
                 </div>
                 <div className="mt-8">
-                  <Button size="large">Finish Production</Button>
+                  <Button
+                    size="large"
+                    disabled={isButtonDisabled}
+                    HasFadeColor={isButtonDisabled}
+                    onClick={submitLocationInfo}
+                  >
+                    Finish Production
+                  </Button>
                 </div>
               </div>
             )}
