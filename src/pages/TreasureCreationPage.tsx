@@ -100,7 +100,7 @@ export function TreasureCreationPage() {
             </div>
             <div className="max-h-60 overflow-y-scroll scrollbar-hide">
               {treasure.hints.map((hintName, index) => (
-                <div className="flex flex-row items-center">
+                <div className="flex flex-row items-center" key={index}>
                   <div className="w-80 mt-4">
                     <Input
                       title={"Hint: " + (index + 1).toString()}
