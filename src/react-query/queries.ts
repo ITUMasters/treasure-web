@@ -1,5 +1,5 @@
 import { axios } from "../react-query";
-import { LocationInfo, Treasure } from "./types";
+import { Hint, LocationInfo, Treasure } from "./types";
 
 export const apiLogin = (data: { email: string; password: string }) => {
   return axios({ url: "/user/login", method: "post", data });
@@ -15,4 +15,12 @@ export const apiCreateLocation = (data: LocationInfo) => {
 
 export const apiCreateTreasure = (data: Treasure) => {
   return axios({ url: "/treasure", method: "post", data });
+};
+
+export const apiCreateHint = (data: Hint) => {
+  return axios({
+    url: "/hint",
+    method: "post",
+    data,
+  });
 };

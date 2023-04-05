@@ -26,7 +26,7 @@ export type treasureAtomType = {
   images: any[];
 };
 
-type hint = {
+export type hint = {
   content: string;
   cost: string;
 };

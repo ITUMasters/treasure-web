@@ -31,7 +31,6 @@ function App() {
 
 function AppWithRecoil() {
   const auth = useAuth();
-  console.log(auth);
   return (
     <Routes>
       {!auth && <Route path={PATHS.LOGIN} element={<LoginPage />} />}

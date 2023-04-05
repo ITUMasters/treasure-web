@@ -24,4 +24,11 @@ export type Treasure = {
   ownerId: number;
 };
 
+export type Hint = {
+  treasureId: number;
+  content: string;
+  isDefault: boolean;
+  cost: number;
+};
+
 export type Hardness = "easy" | "medium" | "hard" | "insane";

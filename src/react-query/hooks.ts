@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+  apiCreateHint,
   apiCreateLocation,
   apiCreateTreasure,
   apiGetUser,
@@ -61,6 +62,21 @@ export const useTreasureSubmissionMutation = ({
 }: CustomMutationProps = {}) => {
   return useMutation({
     mutationFn: apiCreateTreasure,
+    onSuccess: (data) => {
+      onSuccess?.(data);
+    },
+    onError: (err) => {
+      onError?.(err);
+    },
+  });
+};
+
+export const useHintCreationMutation = ({
+  onSuccess,
+  onError,
+}: CustomMutationProps = {}) => {
+  return useMutation({
+    mutationFn: apiCreateHint,
     onSuccess: (data) => {
       onSuccess?.(data);
     },

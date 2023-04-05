@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Input } from "../ui/Input";
 import { Checkbox } from "../ui/Checkbox";
 import { Button } from "../ui/Button";
@@ -12,6 +12,7 @@ import {
 } from "../recoil-store/treasureStoreHooks";
 import { AiOutlineDelete } from "react-icons/ai";
 import {
+  useHintCreationMutation,
   useLocationInfoSubmitMutation,
   useTreasureSubmissionMutation,
 } from "../react-query/hooks";
@@ -19,13 +20,14 @@ import { formatError } from "../utils/formatError";
 import { useNotify } from "../hooks/useNotify";
 import { useId } from "../recoil-store/auth/IdStoreHooks";
 import { Hardness } from "../react-query/types";
+import { hint } from "../recoil-store/treasureStore";
+import Loading from "react-loading";
 
 export function TreasureCreationPage() {
   const navigate = useNavigate();
   const treasure = useTreasure();
   const setTreasure = useSetTreasure();
   const notify = useNotify();
-  const [locationId, setLocationId] = useState(0);
   const userId = useId();
 
   const onChange = (imageList: ImageListType) => {
@@ -39,8 +41,8 @@ export function TreasureCreationPage() {
       const thisHint = treasure.hints[i];
       if (
         thisHint.content.trim() === "" ||
-        thisHint.cost.trim() === "" ||
-        !Number.isInteger(parseInt(thisHint.cost)) ||
+        (i !== 0 && thisHint.cost.trim() === "") ||
+        (!Number.isInteger(parseInt(thisHint.cost)) && i !== 0) ||
         thisHint.cost.indexOf(" ") >= 0
       ) {
         c2 = true;
@@ -51,9 +53,38 @@ export function TreasureCreationPage() {
     return c1 || c2 || c3;
   }, [treasure]);
 
+  const completeTreasure = () => {
+    if (!HintCreationMutation.isLoading) {
+      navigate(PATHS.MAINPAGE);
+    }
+  };
+
+  const HintCreationMutation = useHintCreationMutation({
+    onSuccess: (res) => {
+      completeTreasure();
+    },
+    onError: (error) => {
+      const err = formatError(error);
+      if (err) {
+        notify.error("Hint Creation Fail\n" + err);
+      }
+    },
+  });
+
+  const createHint = (treasureId: number, hint: hint, isDefault: boolean) => {
+    HintCreationMutation.mutate({
+      treasureId: treasureId,
+      content: hint.content,
+      cost: isDefault ? 0 : parseInt(hint.cost),
+      isDefault: isDefault,
+    });
+  };
   const TreasureSubmissionMutation = useTreasureSubmissionMutation({
     onSuccess: (res) => {
-      console.log(res.data.id);
+      const createdTreasureId = res.data.id;
+      for (let i = 0; i < treasure.hints.length; i++) {
+        createHint(createdTreasureId, treasure.hints[i], i === 0);
+      }
     },
     onError: (error) => {
       const err = formatError(error);
@@ -63,7 +94,7 @@ export function TreasureCreationPage() {
     },
   });
 
-  const submitTreasure = () => {
+  const submitTreasure = (locationId: number) => {
     TreasureSubmissionMutation.mutate({
       locationId: locationId,
       hardness: treasure.difficulty as Hardness,
@@ -75,8 +106,7 @@ export function TreasureCreationPage() {
 
   const LocationInfoSubmitMutation = useLocationInfoSubmitMutation({
     onSuccess: (res) => {
-      setLocationId(res.data.id);
-      submitTreasure();
+      submitTreasure(res.data.id);
     },
     onError: (error) => {
       const err = formatError(error);
@@ -94,7 +124,13 @@ export function TreasureCreationPage() {
       latitude: treasure.coordinate.lat,
     });
   };
-
+  if (
+    HintCreationMutation.isLoading ||
+    LocationInfoSubmitMutation.isLoading ||
+    TreasureSubmissionMutation.isLoading
+  ) {
+    return <Loading />;
+  }
   return (
     <div className="bg-bgColor flex flex-row min-h-screen">
       <div
@@ -185,25 +221,27 @@ export function TreasureCreationPage() {
                       }
                     />
                   </div>
-                  <div className="w-24 mt-4 ml-4">
-                    <Input
-                      title="Hint Cost"
-                      value={hintName.cost.toString()}
-                      onChange={(e) =>
-                        setTreasure({
-                          ...treasure,
-                          hints: [
-                            ...treasure.hints.slice(0, index),
-                            {
-                              content: treasure.hints[index].content,
-                              cost: e.target.value,
-                            },
-                            ...treasure.hints.slice(index + 1),
-                          ],
-                        })
-                      }
-                    />
-                  </div>
+                  {index !== 0 && (
+                    <div className="w-24 mt-4 ml-4">
+                      <Input
+                        title="Hint Cost"
+                        value={hintName.cost.toString()}
+                        onChange={(e) =>
+                          setTreasure({
+                            ...treasure,
+                            hints: [
+                              ...treasure.hints.slice(0, index),
+                              {
+                                content: treasure.hints[index].content,
+                                cost: e.target.value,
+                              },
+                              ...treasure.hints.slice(index + 1),
+                            ],
+                          })
+                        }
+                      />
+                    </div>
+                  )}
                   <div
                     className="ml-4 text-3xl"
                     onClick={() => {

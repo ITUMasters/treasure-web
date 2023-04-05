@@ -210,7 +210,6 @@ export function MapPage() {
                 setZoomLevel(element.zoomLevel);
                 setMarkerPos(element.center);
                 setPrevMarkerPos(element.center);
-                console.log(element.regionId);
                 setSelectedRegionId(element.regionId);
               }}
             >
