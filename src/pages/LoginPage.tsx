@@ -1,14 +1,47 @@
 import React, { useState } from "react";
 import { Input } from "../ui/Input";
-import { Checkbox } from "../ui/Checkbox";
 import { Button } from "../ui/Button";
 import Background from "../assets/images/iconicBG.png";
+import { useLoginMutation } from "../react-query/hooks";
+import { useSetAuth } from "../recoil-store/auth/AuthStoreHooks";
+import { useSetId } from "../recoil-store/auth/IdStoreHooks";
+import { useNotify } from "../hooks/useNotify";
+import { formatError } from "../utils/formatError";
+import "react-toastify/dist/ReactToastify.css";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
-  const [checked, setChecked] = useState(false);
+  //const [checked, setChecked] = useState(false);
+  const setAuth = useSetAuth();
+  const setId = useSetId();
+  const notify = useNotify();
+
+  const LoginMutation = useLoginMutation({
+    onSuccess: (res) => {
+      console.log("Success");
+      setId(res.data.user.id);
+      localStorage.setItem("access_token", res.data.token);
+      //localStorage.setItem("remember_me", checked ? "true" : "false");
+      setAuth(true);
+      notify.success("Welcome");
+    },
+    onError: (error) => {
+      const err = formatError(error);
+      if (err) {
+        notify.error(err);
+      }
+    },
+  });
+
+  const login = () => {
+    LoginMutation.mutate({
+      email: email,
+      password: password,
+    });
+  };
+
   return (
     <div className="bg-bgColor min-h-screen items-center flex flex-col">
       <div
@@ -49,7 +82,7 @@ export function LoginPage() {
                 }}
               />
             </div>
-            <div className="mt-4 flex flex-row items-center">
+            {/*<div className="mt-4 flex flex-row items-center">
               <Checkbox
                 checked={checked}
                 onClick={() => {
@@ -57,10 +90,12 @@ export function LoginPage() {
                 }}
               />
               <p className="text-white ml-2">Remember Me</p>
-            </div>
+              </div>*/}
             <div className="flex justify-center">
               <div className="mt-4 w-40">
-                <Button size="xlarge">Login</Button>
+                <Button size="xlarge" onClick={login}>
+                  Login
+                </Button>
               </div>
             </div>
           </div>
