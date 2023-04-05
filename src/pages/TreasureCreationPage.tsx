@@ -53,18 +53,8 @@ export function TreasureCreationPage() {
     return c1 || c2 || c3;
   }, [treasure]);
 
-  const completeTreasure = () => {
-    console.log("CC");
-    if (!HintCreationMutation.isLoading) {
-      console.log("BB");
-      navigate(PATHS.MAINPAGE);
-    }
-  };
-
   const HintCreationMutation = useHintCreationMutation({
-    onSuccess: (res) => {
-      completeTreasure();
-    },
+    onSuccess: (res) => {},
     onError: (error) => {
       const err = formatError(error);
       if (err) {
@@ -134,6 +124,19 @@ export function TreasureCreationPage() {
     return <Loading />;
   }
   if (HintCreationMutation.isSuccess) {
+    setTreasure({
+      name: "",
+      regionName: "",
+      difficulty: "easy",
+      coordinate: {
+        name: "My Treasure",
+        lat: 0,
+        lng: 0,
+        regionId: -1,
+      },
+      hints: [{ content: "", cost: "" }],
+      images: [],
+    });
     navigate(PATHS.MAINPAGE);
   }
   return (
