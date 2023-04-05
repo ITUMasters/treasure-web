@@ -54,7 +54,9 @@ export function TreasureCreationPage() {
   }, [treasure]);
 
   const completeTreasure = () => {
+    console.log("CC");
     if (!HintCreationMutation.isLoading) {
+      console.log("BB");
       navigate(PATHS.MAINPAGE);
     }
   };
@@ -130,6 +132,9 @@ export function TreasureCreationPage() {
     TreasureSubmissionMutation.isLoading
   ) {
     return <Loading />;
+  }
+  if (HintCreationMutation.isSuccess) {
+    navigate(PATHS.MAINPAGE);
   }
   return (
     <div className="bg-bgColor flex flex-row min-h-screen">
