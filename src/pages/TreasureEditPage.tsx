@@ -3,7 +3,7 @@ import { Input } from "../ui/Input";
 import { Checkbox } from "../ui/Checkbox";
 import { Button } from "../ui/Button";
 import ImageUploading, { ImageListType } from "react-images-uploading";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { PATHS } from "../consts/paths";
 import Background from "../assets/images/iconicBG.png";
 import {
@@ -12,27 +12,29 @@ import {
 } from "../recoil-store/treasureStoreHooks";
 import { AiOutlineDelete } from "react-icons/ai";
 import {
-  useHintCreationMutation,
-  useLocationInfoSubmitMutation,
-  useTreasureSubmissionMutation,
+  useHintByTreasureId,
+  useTreasureByTreasureId,
 } from "../react-query/hooks";
-import { formatError } from "../utils/formatError";
-import { useNotify } from "../hooks/useNotify";
-import { useId } from "../recoil-store/auth/IdStoreHooks";
-import { Hardness } from "../react-query/types";
-import { hint } from "../recoil-store/treasureStore";
 import Loading from "react-loading";
+import { StateSetter } from "../ui/StateSetter";
+import { hint } from "../recoil-store/treasureStore";
+import { LocationGetter } from "../ui/LocationGetter";
 
-export function TreasureCreationPage() {
+export function TreasureEditPage() {
   const navigate = useNavigate();
   const treasure = useTreasure();
   const setTreasure = useSetTreasure();
-  const notify = useNotify();
-  const userId = useId();
 
   const onChange = (imageList: ImageListType) => {
     setTreasure({ ...treasure, images: imageList as never[] });
   };
+  const location = useLocation();
+  const { treasureById, isFetching } = useTreasureByTreasureId(
+    location.state.treasureId
+  );
+  const comingFromMap = location.state && location.state.comingFromMap;
+
+  const hintsByTresureId = useHintByTreasureId(location.state.treasureId);
 
   const isButtonDisabled = useMemo(() => {
     const c1 = treasure.name.trim() === "";
@@ -53,94 +55,41 @@ export function TreasureCreationPage() {
     return c1 || c2 || c3;
   }, [treasure]);
 
-  const HintCreationMutation = useHintCreationMutation({
-    onSuccess: (res) => {},
-    onError: (error) => {
-      const err = formatError(error);
-      if (err) {
-        notify.error("Hint Creation Fail\n" + err);
-      }
-    },
-  });
-
-  const createHint = (treasureId: number, hint: hint, isDefault: boolean) => {
-    HintCreationMutation.mutate({
-      treasureId: treasureId,
-      content: hint.content,
-      cost: isDefault ? 0 : parseInt(hint.cost),
-      isDefault: isDefault,
-    });
-  };
-  const TreasureSubmissionMutation = useTreasureSubmissionMutation({
-    onSuccess: (res) => {
-      const createdTreasureId = res.data.id;
-      for (let i = 0; i < treasure.hints.length; i++) {
-        createHint(createdTreasureId, treasure.hints[i], i === 0);
-      }
-    },
-    onError: (error) => {
-      const err = formatError(error);
-      if (err) {
-        notify.error("Treasure Creation Fail\n" + err);
-      }
-    },
-  });
-
-  const submitTreasure = (locationId: number) => {
-    TreasureSubmissionMutation.mutate({
-      locationId: locationId,
-      hardness: treasure.difficulty as Hardness,
-      name: treasure.name,
-      ownerId: userId,
-      timeLimit: 60,
-    });
-  };
-
-  const LocationInfoSubmitMutation = useLocationInfoSubmitMutation({
-    onSuccess: (res) => {
-      submitTreasure(res.data.id);
-    },
-    onError: (error) => {
-      const err = formatError(error);
-      if (err) {
-        notify.error("LocationInfo Submission is failed\n" + err);
-      }
-    },
-  });
-
-  const submitLocationInfo = () => {
-    LocationInfoSubmitMutation.mutate({
-      regionId: treasure.coordinate.regionId,
-      altitude: 1,
-      longitude: treasure.coordinate.lng,
-      latitude: treasure.coordinate.lat,
-    });
-  };
-  if (
-    HintCreationMutation.isLoading ||
-    LocationInfoSubmitMutation.isLoading ||
-    TreasureSubmissionMutation.isLoading
-  ) {
+  if (isFetching || hintsByTresureId.isFetching) {
     return <Loading />;
   }
-  if (HintCreationMutation.isSuccess) {
-    setTreasure({
-      name: "",
-      regionName: "",
-      difficulty: "easy",
-      coordinate: {
-        name: "My Treasure",
-        lat: 0,
-        lng: 0,
-        regionId: -1,
-      },
-      hints: [{ content: "", cost: "" }],
-      images: [],
+  const hints = hintsByTresureId.hintsByTresureId;
+  const newHints: hint[] = [];
+  for (let i = 0; i < hints.length; i++) {
+    newHints.push({
+      content: hints[i].content,
+      cost: hints[i].cost.toString(),
     });
-    navigate(PATHS.MAINPAGE);
   }
+
+  console.log("DEBUGLA AA ", treasure);
   return (
     <div className="bg-bgColor flex flex-row min-h-screen">
+      {!comingFromMap && (
+        <>
+          <LocationGetter
+            locationId={treasureById.locationId}
+            regionName={treasureById.location?.region.name as string}
+          />
+          <StateSetter
+            setSpecificState={() => {
+              setTreasure({
+                ...treasure,
+                name: treasureById.name,
+                difficulty: treasureById.hardness,
+                hints: newHints,
+                regionName: treasureById.location?.region.name as string,
+                //coordinate: {name: treasureById.location?.region.name as string, lat: treasureById.location?.region.}
+              });
+            }}
+          />
+        </>
+      )}
       <div
         className="bg-repeat min-h-screen w-full flex flex-row"
         style={{
@@ -207,7 +156,10 @@ export function TreasureCreationPage() {
                 size="large"
                 onClick={() =>
                   navigate(PATHS.MAP, {
-                    state: { isEdit: false, treasureId: -1 },
+                    state: {
+                      isEdit: true,
+                      treasureId: location.state.treasureId,
+                    },
                   })
                 }
               >
@@ -317,7 +269,6 @@ export function TreasureCreationPage() {
                     size="large"
                     disabled={isButtonDisabled}
                     HasFadeColor={isButtonDisabled}
-                    onClick={submitLocationInfo}
                   >
                     Finish Production
                   </Button>

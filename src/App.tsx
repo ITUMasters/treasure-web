@@ -13,6 +13,7 @@ import { Leaderboard } from "./pages/Leaderboard";
 import { useAuth } from "./recoil-store/auth/AuthStoreHooks";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import { TreasureEditPage } from "./pages/TreasureEditPage";
 
 export const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ function AppWithRecoil() {
           <Route path={PATHS.MAINPAGE} element={<MainPage />} />
           <Route path={PATHS.CREATEDS} element={<Createds />} />
           <Route path={PATHS.LEADERBOARD} element={<Leaderboard />} />
+          <Route path={PATHS.EDITTREASURE} element={<TreasureEditPage />} />
         </>
       )}
       {!auth && <Route path="*" element={<LoginPage />} />}

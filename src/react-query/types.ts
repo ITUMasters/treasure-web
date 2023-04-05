@@ -22,6 +22,15 @@ export type Treasure = {
   hardness: Hardness;
   name: string;
   ownerId: number;
+  location?: {
+    locationId: number;
+    region: Region;
+  };
+};
+
+export type Region = {
+  id: number;
+  name: string;
 };
 
 export type Hint = {
