@@ -2,7 +2,7 @@ import React from "react";
 import "./styles/App.css";
 import { MapPage } from "./pages/MapPage";
 import { RecoilRoot } from "recoil";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route, BrowserRouter, useLocation } from "react-router-dom";
 import { TreasureCreationPage } from "./pages/TreasureCreationPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MainPage } from "./pages/MainPage";
@@ -32,6 +32,7 @@ function App() {
 
 function AppWithRecoil() {
   const auth = useAuth();
+  const location = useLocation();
   return (
     <Routes>
       {!auth && <Route path={PATHS.LOGIN} element={<LoginPage />} />}
@@ -45,7 +46,16 @@ function AppWithRecoil() {
           <Route path={PATHS.MAINPAGE} element={<MainPage />} />
           <Route path={PATHS.CREATEDS} element={<Createds />} />
           <Route path={PATHS.LEADERBOARD} element={<Leaderboard />} />
-          <Route path={PATHS.EDITTREASURE} element={<TreasureEditPage />} />
+          <Route
+            path={PATHS.EDITTREASURE}
+            element={
+              location.state !== null && location.state.treasureId !== null ? (
+                <TreasureEditPage />
+              ) : (
+                <TreasureCreationPage />
+              )
+            }
+          />
         </>
       )}
       {!auth && <Route path="*" element={<LoginPage />} />}

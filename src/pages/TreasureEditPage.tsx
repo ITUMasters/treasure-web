@@ -37,12 +37,13 @@ export function TreasureEditPage() {
     setTreasure({ ...treasure, images: imageList as never[] });
   };
   const location = useLocation();
+
   const { treasureById, isFetching } = useTreasureByTreasureId(
-    location.state.treasureId
+    location.state?.treasureId
   );
   const comingFromMap = location.state && location.state.comingFromMap;
 
-  const hintsByTresureId = useHintByTreasureId(location.state.treasureId);
+  const hintsByTresureId = useHintByTreasureId(location.state?.treasureId);
   const notify = useNotify();
 
   const isButtonDisabled = useMemo(() => {
@@ -150,7 +151,7 @@ export function TreasureEditPage() {
 
   const LocationUpdateMutation = useLocationUpdateMutation({
     onSuccess: (res) => {
-      updateTreasure(location.state.treasureId);
+      updateTreasure(location.state?.treasureId);
     },
     onError: (error) => {
       const err = formatError(error);
