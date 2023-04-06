@@ -10,7 +10,7 @@ export const treasureAtom = atom<treasureAtomType>({
       lng: 0,
       regionId: -1,
     },
-    hints: [{ content: "", cost: "" }],
+    hints: [{ hintId: 0, content: "", cost: "" }],
     images: [],
   },
 
@@ -27,6 +27,7 @@ export type treasureAtomType = {
 };
 
 export type hint = {
+  hintId?: number;
   content: string;
   cost: string;
 };

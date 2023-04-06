@@ -19,7 +19,6 @@ export function LocationGetter({
     return <Loading />;
   }
   const locationInfoReal = locationInfo.locationInfo;
-  console.log("Bu nasil is", treasure.coordinate);
   return (
     <>
       <StateSetter
@@ -30,7 +29,7 @@ export function LocationGetter({
               regionId: locationInfoReal.regionId,
               lat: locationInfoReal.latitude,
               lng: locationInfoReal.longitude,
-              name: regionName,
+              name: treasure.coordinate.name,
             },
           })
         }

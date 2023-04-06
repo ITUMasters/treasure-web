@@ -8,6 +8,9 @@ import {
   apiGetTreasureByTreasureId,
   apiGetUser,
   apiLogin,
+  apiUpdateHint,
+  apiUpdateLocation,
+  apiUpdateTreasure,
 } from "./queries";
 import { QUERY_KEYS } from "./queryKeys";
 import { Hint, LocationInfo, Treasure, User } from "./types";
@@ -117,4 +120,49 @@ export const useLocationInfo = (locationId: number) => {
   });
   const locationInfo: LocationInfo = data?.data;
   return { locationInfo: locationInfo, ...rest };
+};
+
+export const useLocationUpdateMutation = ({
+  onSuccess,
+  onError,
+}: CustomMutationProps = {}) => {
+  return useMutation({
+    mutationFn: apiUpdateLocation,
+    onSuccess: (data) => {
+      onSuccess?.(data);
+    },
+    onError: (err) => {
+      onError?.(err);
+    },
+  });
+};
+
+export const useTreasureUpdateMutation = ({
+  onSuccess,
+  onError,
+}: CustomMutationProps = {}) => {
+  return useMutation({
+    mutationFn: apiUpdateTreasure,
+    onSuccess: (data) => {
+      onSuccess?.(data);
+    },
+    onError: (err) => {
+      onError?.(err);
+    },
+  });
+};
+
+export const useHintUpdateMutation = ({
+  onSuccess,
+  onError,
+}: CustomMutationProps = {}) => {
+  return useMutation({
+    mutationFn: apiUpdateHint,
+    onSuccess: (data) => {
+      onSuccess?.(data);
+    },
+    onError: (err) => {
+      onError?.(err);
+    },
+  });
 };

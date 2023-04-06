@@ -10,6 +10,7 @@ export type User = {
 };
 
 export type LocationInfo = {
+  locationId?: number;
   regionId: number;
   altitude: number;
   longitude: number;
@@ -17,11 +18,12 @@ export type LocationInfo = {
 };
 
 export type Treasure = {
-  locationId: number;
+  treasureId?: number;
+  locationId?: number;
   timeLimit?: number;
   hardness: Hardness;
   name: string;
-  ownerId: number;
+  ownerId?: number;
   location?: {
     locationId: number;
     region: Region;
@@ -34,7 +36,8 @@ export type Region = {
 };
 
 export type Hint = {
-  treasureId: number;
+  id?: number;
+  treasureId?: number;
   content: string;
   isDefault: boolean;
   cost: number;

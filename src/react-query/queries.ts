@@ -43,3 +43,27 @@ export const apiGetHintByTreasureId = (treasureId: number) => {
     method: "get",
   });
 };
+
+export const apiUpdateLocation = (data: LocationInfo) => {
+  return axios({
+    url: "/locationInfo/" + (data.locationId as number).toString(),
+    method: "put",
+    data,
+  });
+};
+
+export const apiUpdateTreasure = (data: Treasure) => {
+  return axios({
+    url: "/treasure/" + (data.treasureId as number).toString(),
+    method: "put",
+    data,
+  });
+};
+
+export const apiUpdateHint = (data: Hint) => {
+  return axios({
+    url: "/hint/" + (data.id as number).toString(),
+    method: "put",
+    data,
+  });
+};
