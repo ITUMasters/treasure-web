@@ -13,6 +13,8 @@ import {
 import { AiOutlineDelete } from "react-icons/ai";
 import {
   useHintByTreasureId,
+  useHintCreationMutation,
+  useHintDeleteMutation,
   useHintUpdateMutation,
   useLocationUpdateMutation,
   useTreasureByTreasureId,
@@ -62,10 +64,41 @@ export function TreasureEditPage() {
     return c1 || c2 || c3;
   }, [treasure]);
 
-  const HintUpdateMutation = useHintUpdateMutation({
-    onSuccess: (res) => {
-      console.log("Hint update Sucess");
+  const HintDeleteMutation = useHintDeleteMutation({
+    onSuccess: (res) => {},
+    onError: (error) => {
+      const err = formatError(error);
+      if (err) {
+        notify.error("Hint Deletion Fail\n" + err);
+      }
     },
+  });
+
+  const deleteHint = (hintId: number) => {
+    HintDeleteMutation.mutate(hintId);
+  };
+
+  const HintCreationMutation = useHintCreationMutation({
+    onSuccess: (res) => {},
+    onError: (error) => {
+      const err = formatError(error);
+      if (err) {
+        notify.error("Hint Creation Fail\n" + err);
+      }
+    },
+  });
+
+  const createHint = (treasureId: number, hint: hint, isDefault: boolean) => {
+    HintCreationMutation.mutate({
+      treasureId: treasureId,
+      content: hint.content,
+      cost: isDefault ? 0 : parseInt(hint.cost),
+      isDefault: isDefault,
+    });
+  };
+
+  const HintUpdateMutation = useHintUpdateMutation({
+    onSuccess: (res) => {},
     onError: (error) => {
       const err = formatError(error);
       if (err) {
@@ -86,8 +119,17 @@ export function TreasureEditPage() {
   const TreasureUpdateMutation = useTreasureUpdateMutation({
     onSuccess: (res) => {
       for (let i = 0; i < treasure.hints.length; i++) {
-        updateHint(treasure.hints[i], i === 0);
+        const hintInTheLoop = treasure.hints[i];
+        if (hintInTheLoop.hintId === 0) {
+          createHint(res.data.id, hintInTheLoop, i === 0);
+        } else {
+          updateHint(treasure.hints[i], i === 0);
+        }
       }
+      for (let i = 0; i < treasure.deletedHints.length; i++) {
+        deleteHint(treasure.deletedHints[i].hintId as number);
+      }
+      setTreasure({ ...treasure, deletedHints: [] });
     },
     onError: (error) => {
       const err = formatError(error);
@@ -127,10 +169,36 @@ export function TreasureEditPage() {
       latitude: treasure.coordinate.lat,
     });
   };
-
   if (isFetching || hintsByTresureId.isFetching) {
     return <Loading />;
   }
+  if (
+    HintCreationMutation.isLoading ||
+    LocationUpdateMutation.isLoading ||
+    TreasureUpdateMutation.isLoading ||
+    HintUpdateMutation.isLoading ||
+    HintDeleteMutation.isLoading
+  ) {
+    return <Loading />;
+  }
+  if (TreasureUpdateMutation.isSuccess) {
+    setTreasure({
+      name: "",
+      regionName: "",
+      difficulty: "easy",
+      coordinate: {
+        name: "My Treasure",
+        lat: 0,
+        lng: 0,
+        regionId: -1,
+      },
+      hints: [{ content: "", cost: "", hintId: 0 }],
+      deletedHints: [],
+      images: [],
+    });
+    navigate(PATHS.MAINPAGE);
+  }
+
   const hints = hintsByTresureId.hintsByTresureId;
   const newHints: hint[] = [];
   for (let i = 0; i < hints.length; i++) {
@@ -140,8 +208,6 @@ export function TreasureEditPage() {
       cost: hints[i].cost.toString(),
     });
   }
-
-  console.log("DEbuggegst", treasure.hints);
 
   return (
     <div className="bg-bgColor flex flex-row min-h-screen">
@@ -296,6 +362,13 @@ export function TreasureEditPage() {
                             ...treasure.hints.slice(0, index),
                             ...treasure.hints.slice(index + 1),
                           ],
+                          deletedHints:
+                            treasure.hints[index].hintId !== 0
+                              ? [
+                                  ...treasure.deletedHints,
+                                  treasure.hints[index],
+                                ]
+                              : treasure.deletedHints,
                         });
                       }
                     }}

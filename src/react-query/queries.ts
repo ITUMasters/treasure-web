@@ -67,3 +67,10 @@ export const apiUpdateHint = (data: Hint) => {
     data,
   });
 };
+
+export const apiDeleteHint = (hintId: number) => {
+  return axios({
+    url: "/hint/" + hintId.toString(),
+    method: "delete",
+  });
+};

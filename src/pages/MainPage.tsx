@@ -34,7 +34,6 @@ export function MainPage() {
       </div>
     );
   }
-  console.log(user);
 
   return (
     <div className="bg-bgColor h-screen flex flex-col">

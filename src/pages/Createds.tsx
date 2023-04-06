@@ -3,7 +3,6 @@ import { CreatedTreasureCard } from "../ui/CreatedTreasureCard";
 import Background from "../assets/images/iconicBG.png";
 
 export function Createds() {
-  console.log("HELLO");
   return (
     <div className="bg-bgColor h-screen flex flex-col">
       <div

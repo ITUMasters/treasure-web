@@ -134,7 +134,8 @@ export function TreasureCreationPage() {
         lng: 0,
         regionId: -1,
       },
-      hints: [{ content: "", cost: "" }],
+      hints: [{ content: "", cost: "", hintId: 0 }],
+      deletedHints: [],
       images: [],
     });
     navigate(PATHS.MAINPAGE);

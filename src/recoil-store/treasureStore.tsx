@@ -12,6 +12,7 @@ export const treasureAtom = atom<treasureAtomType>({
     },
     hints: [{ hintId: 0, content: "", cost: "" }],
     images: [],
+    deletedHints: [],
   },
 
   key: "treasure.Atom",
@@ -24,6 +25,7 @@ export type treasureAtomType = {
   coordinate: coordinateType;
   hints: hint[];
   images: any[];
+  deletedHints: hint[];
 };
 
 export type hint = {

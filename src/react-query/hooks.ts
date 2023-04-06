@@ -3,6 +3,7 @@ import {
   apiCreateHint,
   apiCreateLocation,
   apiCreateTreasure,
+  apiDeleteHint,
   apiGetHintByTreasureId,
   apiGetLocation,
   apiGetTreasureByTreasureId,
@@ -158,6 +159,21 @@ export const useHintUpdateMutation = ({
 }: CustomMutationProps = {}) => {
   return useMutation({
     mutationFn: apiUpdateHint,
+    onSuccess: (data) => {
+      onSuccess?.(data);
+    },
+    onError: (err) => {
+      onError?.(err);
+    },
+  });
+};
+
+export const useHintDeleteMutation = ({
+  onSuccess,
+  onError,
+}: CustomMutationProps = {}) => {
+  return useMutation({
+    mutationFn: apiDeleteHint,
     onSuccess: (data) => {
       onSuccess?.(data);
     },
