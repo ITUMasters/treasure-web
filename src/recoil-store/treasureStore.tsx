@@ -34,7 +34,7 @@ export type hint = {
   cost: string;
 };
 
-type coordinateType = {
+export type coordinateType = {
   name: string;
   lat: number;
   lng: number;
