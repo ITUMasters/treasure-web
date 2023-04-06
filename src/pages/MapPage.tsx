@@ -7,7 +7,7 @@ import {
 } from "@react-google-maps/api";
 import React, { useState } from "react";
 import { Button } from "../ui/Button";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { PATHS } from "../consts/paths";
 import {
   useSetTreasure,
@@ -104,6 +104,10 @@ export function MapPage() {
   const [marker, setMarker] = useState(null as any);
   const [mapInstance, setMapInstace] = useState(null as any);
   const [caption, setCaption] = useState("My Treasure");
+  const location = useLocation();
+  const isEdit = location.state.isEdit;
+  const treasureIdFromRouter = location.state.treasureId;
+  console.log(treasureIdFromRouter);
 
   return (
     <div className="flex items-center justify-center flex-col">
@@ -190,8 +194,11 @@ export function MapPage() {
                 lng: markerPos.lng,
                 regionId: selectedRegionId,
               },
+              regionName: selectedRegion,
             });
-            navigate(PATHS.TREASUREFABRICATION);
+            navigate(isEdit ? PATHS.EDITTREASURE : PATHS.TREASUREFABRICATION, {
+              state: { treasureId: treasureIdFromRouter, comingFromMap: true },
+            });
           }}
         >
           Submit Treasure Coordinate

@@ -1,16 +1,20 @@
 import { Button } from "./Button";
 import { Icons } from "./Icons";
+import { PATHS } from "../consts/paths";
+import { useNavigate } from "react-router-dom";
 type CreatedTreasureCardProps = {
   id: number;
   name: string;
   difficulty: string;
   timeLeft: string;
+  treasureId: number;
 };
 export function CreatedTreasureCard({
   id,
   name,
   difficulty,
   timeLeft,
+  treasureId,
 }: CreatedTreasureCardProps) {
   var difficultyColor = "#30B526";
   if (difficulty === "Medium") {
@@ -18,6 +22,7 @@ export function CreatedTreasureCard({
   } else if (difficulty === "Hard") {
     difficultyColor = "#E8311A";
   }
+  const navigate = useNavigate();
   return (
     <div
       style={{
@@ -60,7 +65,16 @@ export function CreatedTreasureCard({
 
         <div style={{ width: 96, marginTop: 8, marginLeft: 64 }}>
           <div className="w-24">
-            <Button size="small">Edit</Button>
+            <Button
+              size="small"
+              onClick={() =>
+                navigate(PATHS.EDITTREASURE, {
+                  state: { treasureId: treasureId },
+                })
+              }
+            >
+              Edit
+            </Button>
           </div>
         </div>
 

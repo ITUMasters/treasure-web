@@ -3,7 +3,7 @@ import { Input } from "../ui/Input";
 import { Checkbox } from "../ui/Checkbox";
 import { Button } from "../ui/Button";
 import ImageUploading, { ImageListType } from "react-images-uploading";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { PATHS } from "../consts/paths";
 import Background from "../assets/images/iconicBG.png";
 import {
@@ -12,27 +12,39 @@ import {
 } from "../recoil-store/treasureStoreHooks";
 import { AiOutlineDelete } from "react-icons/ai";
 import {
+  useHintByTreasureId,
   useHintCreationMutation,
-  useLocationInfoSubmitMutation,
-  useTreasureSubmissionMutation,
+  useHintDeleteMutation,
+  useHintUpdateMutation,
+  useLocationUpdateMutation,
+  useTreasureByTreasureId,
+  useTreasureUpdateMutation,
 } from "../react-query/hooks";
+import Loading from "react-loading";
+import { StateSetter } from "../ui/StateSetter";
+import { hint } from "../recoil-store/treasureStore";
+import { LocationGetter } from "../ui/LocationGetter";
 import { formatError } from "../utils/formatError";
 import { useNotify } from "../hooks/useNotify";
-import { useId } from "../recoil-store/auth/IdStoreHooks";
 import { Hardness } from "../react-query/types";
-import { hint } from "../recoil-store/treasureStore";
-import Loading from "react-loading";
 
-export function TreasureCreationPage() {
+export function TreasureEditPage() {
   const navigate = useNavigate();
   const treasure = useTreasure();
   const setTreasure = useSetTreasure();
-  const notify = useNotify();
-  const userId = useId();
 
   const onChange = (imageList: ImageListType) => {
     setTreasure({ ...treasure, images: imageList as never[] });
   };
+  const location = useLocation();
+
+  const { treasureById, isFetching } = useTreasureByTreasureId(
+    location.state?.treasureId
+  );
+  const comingFromMap = location.state && location.state.comingFromMap;
+
+  const hintsByTresureId = useHintByTreasureId(location.state?.treasureId);
+  const notify = useNotify();
 
   const isButtonDisabled = useMemo(() => {
     const c1 = treasure.name.trim() === "";
@@ -53,6 +65,20 @@ export function TreasureCreationPage() {
     return c1 || c2 || c3;
   }, [treasure]);
 
+  const HintDeleteMutation = useHintDeleteMutation({
+    onSuccess: (res) => {},
+    onError: (error) => {
+      const err = formatError(error);
+      if (err) {
+        notify.error("Hint Deletion Fail\n" + err);
+      }
+    },
+  });
+
+  const deleteHint = (hintId: number) => {
+    HintDeleteMutation.mutate(hintId);
+  };
+
   const HintCreationMutation = useHintCreationMutation({
     onSuccess: (res) => {},
     onError: (error) => {
@@ -71,59 +97,92 @@ export function TreasureCreationPage() {
       isDefault: isDefault,
     });
   };
-  const TreasureSubmissionMutation = useTreasureSubmissionMutation({
-    onSuccess: (res) => {
-      const createdTreasureId = res.data.id;
-      for (let i = 0; i < treasure.hints.length; i++) {
-        createHint(createdTreasureId, treasure.hints[i], i === 0);
-      }
-    },
+
+  const HintUpdateMutation = useHintUpdateMutation({
+    onSuccess: (res) => {},
     onError: (error) => {
       const err = formatError(error);
       if (err) {
-        notify.error("Treasure Creation Fail\n" + err);
+        notify.error("Hint Update Fail\n" + err);
       }
     },
   });
 
-  const submitTreasure = (locationId: number) => {
-    TreasureSubmissionMutation.mutate({
-      locationId: locationId,
+  const updateHint = (hint: hint, isDefault: boolean) => {
+    HintUpdateMutation.mutate({
+      id: hint.hintId as number,
+      content: hint.content,
+      cost: isDefault ? 0 : parseInt(hint.cost),
+      isDefault: isDefault,
+    });
+  };
+
+  const TreasureUpdateMutation = useTreasureUpdateMutation({
+    onSuccess: (res) => {
+      for (let i = 0; i < treasure.hints.length; i++) {
+        const hintInTheLoop = treasure.hints[i];
+        if (hintInTheLoop.hintId === 0) {
+          createHint(res.data.id, hintInTheLoop, i === 0);
+        } else {
+          updateHint(treasure.hints[i], i === 0);
+        }
+      }
+      for (let i = 0; i < treasure.deletedHints.length; i++) {
+        deleteHint(treasure.deletedHints[i].hintId as number);
+      }
+      setTreasure({ ...treasure, deletedHints: [] });
+    },
+    onError: (error) => {
+      const err = formatError(error);
+      if (err) {
+        notify.error("Treasure Update Fail\n" + err);
+      }
+    },
+  });
+
+  const updateTreasure = (treasureId: number) => {
+    TreasureUpdateMutation.mutate({
       hardness: treasure.difficulty as Hardness,
       name: treasure.name,
-      ownerId: userId,
+      treasureId: treasureId,
       timeLimit: 60,
     });
   };
 
-  const LocationInfoSubmitMutation = useLocationInfoSubmitMutation({
+  const LocationUpdateMutation = useLocationUpdateMutation({
     onSuccess: (res) => {
-      submitTreasure(res.data.id);
+      updateTreasure(location.state?.treasureId);
     },
     onError: (error) => {
       const err = formatError(error);
       if (err) {
-        notify.error("LocationInfo Submission is failed\n" + err);
+        notify.error("LocationInfo Update is failed\n" + err);
       }
     },
   });
 
-  const submitLocationInfo = () => {
-    LocationInfoSubmitMutation.mutate({
+  const updateLocation = () => {
+    LocationUpdateMutation.mutate({
+      locationId: treasureById.locationId,
       regionId: treasure.coordinate.regionId,
       altitude: 1,
       longitude: treasure.coordinate.lng,
       latitude: treasure.coordinate.lat,
     });
   };
+  if (isFetching || hintsByTresureId.isFetching) {
+    return <Loading />;
+  }
   if (
     HintCreationMutation.isLoading ||
-    LocationInfoSubmitMutation.isLoading ||
-    TreasureSubmissionMutation.isLoading
+    LocationUpdateMutation.isLoading ||
+    TreasureUpdateMutation.isLoading ||
+    HintUpdateMutation.isLoading ||
+    HintDeleteMutation.isLoading
   ) {
     return <Loading />;
   }
-  if (HintCreationMutation.isSuccess) {
+  if (TreasureUpdateMutation.isSuccess) {
     setTreasure({
       name: "",
       regionName: "",
@@ -140,8 +199,39 @@ export function TreasureCreationPage() {
     });
     navigate(PATHS.MAINPAGE);
   }
+
+  const hints = hintsByTresureId.hintsByTresureId;
+  const newHints: hint[] = [];
+  for (let i = 0; i < hints.length; i++) {
+    newHints.push({
+      hintId: hints[i].id,
+      content: hints[i].content,
+      cost: hints[i].cost.toString(),
+    });
+  }
+
   return (
     <div className="bg-bgColor flex flex-row min-h-screen">
+      {!comingFromMap && (
+        <>
+          <LocationGetter
+            locationId={treasureById.locationId as number}
+            regionName={treasureById.location?.region.name as string}
+          />
+          <StateSetter
+            setSpecificState={() => {
+              setTreasure({
+                ...treasure,
+                name: treasureById.name,
+                difficulty: treasureById.hardness,
+                hints: newHints,
+                regionName: treasureById.location?.region.name as string,
+                //coordinate: {name: treasureById.location?.region.name as string, lat: treasureById.location?.region.}
+              });
+            }}
+          />
+        </>
+      )}
       <div
         className="bg-repeat min-h-screen w-full flex flex-row"
         style={{
@@ -208,7 +298,10 @@ export function TreasureCreationPage() {
                 size="large"
                 onClick={() =>
                   navigate(PATHS.MAP, {
-                    state: { isEdit: false, treasureId: -1 },
+                    state: {
+                      isEdit: true,
+                      treasureId: location.state.treasureId,
+                    },
                   })
                 }
               >
@@ -230,6 +323,7 @@ export function TreasureCreationPage() {
                             {
                               content: e.target.value,
                               cost: treasure.hints[index].cost,
+                              hintId: treasure.hints[index].hintId,
                             },
                             ...treasure.hints.slice(index + 1),
                           ],
@@ -250,6 +344,7 @@ export function TreasureCreationPage() {
                               {
                                 content: treasure.hints[index].content,
                                 cost: e.target.value,
+                                hintId: treasure.hints[index].hintId,
                               },
                               ...treasure.hints.slice(index + 1),
                             ],
@@ -268,6 +363,13 @@ export function TreasureCreationPage() {
                             ...treasure.hints.slice(0, index),
                             ...treasure.hints.slice(index + 1),
                           ],
+                          deletedHints:
+                            treasure.hints[index].hintId !== 0
+                              ? [
+                                  ...treasure.deletedHints,
+                                  treasure.hints[index],
+                                ]
+                              : treasure.deletedHints,
                         });
                       }
                     }}
@@ -285,7 +387,10 @@ export function TreasureCreationPage() {
                 onClick={() => {
                   setTreasure({
                     ...treasure,
-                    hints: [...treasure.hints, { content: "", cost: "" }],
+                    hints: [
+                      ...treasure.hints,
+                      { content: "", cost: "", hintId: 0 },
+                    ],
                   });
                 }}
               >
@@ -318,7 +423,7 @@ export function TreasureCreationPage() {
                     size="large"
                     disabled={isButtonDisabled}
                     HasFadeColor={isButtonDisabled}
-                    onClick={submitLocationInfo}
+                    onClick={updateLocation}
                   >
                     Finish Production
                   </Button>

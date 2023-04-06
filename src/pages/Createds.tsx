@@ -27,12 +27,14 @@ export function Createds() {
             name={"Bee Road"}
             difficulty={"Medium"}
             timeLeft={"Time Left: 4 days 2 hours 32 mins"}
+            treasureId={60} //TODO: simdilik 60 sonra getle cekcem.
           ></CreatedTreasureCard>
           <CreatedTreasureCard
             id={2}
             name={"Dogs"}
             difficulty={"Easy"}
             timeLeft={"Time Left: 14 mins"}
+            treasureId={61}
           ></CreatedTreasureCard>
         </div>
       </div>

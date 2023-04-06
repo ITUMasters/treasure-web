@@ -5,4 +5,5 @@ export const PATHS = {
   MAP: "/map",
   CREATEDS: "/createds",
   LEADERBOARD: "/leaderboard",
+  EDITTREASURE: "/editTreasure",
 };
