@@ -301,6 +301,10 @@ export function TreasureEditPage() {
                     state: {
                       isEdit: true,
                       treasureId: location.state.treasureId,
+                      locationInfo: {
+                        coordinate: treasure.coordinate,
+                        regionName: treasure.regionName,
+                      },
                     },
                   })
                 }

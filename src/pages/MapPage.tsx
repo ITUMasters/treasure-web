@@ -16,6 +16,8 @@ import {
 import { Input } from "../ui/Input";
 import { GeoJSONToPolyLine } from "../utils/GeoJSONToPolyLine";
 import { PolyLineCoordinates } from "../consts/PolyLineCoordinates";
+import { StateSetter } from "../ui/StateSetter";
+import { coordinateType } from "../recoil-store/treasureStore";
 
 //TODO: There is type error regarding to InfoWindow (I could not solved yet!)
 export function MapPage() {
@@ -111,6 +113,38 @@ export function MapPage() {
 
   return (
     <div className="flex items-center justify-center flex-col">
+      <StateSetter
+        setSpecificState={() => {
+          if (
+            location.state !== null &&
+            location.state.locationInfo !== null &&
+            location.state.isEdit != null &&
+            location.state.isEdit
+          ) {
+            const coordinate: coordinateType =
+              location.state.locationInfo.coordinate;
+            setMarkerPos({ lat: coordinate.lat, lng: coordinate.lng });
+            setPrevMarkerPos({ lat: coordinate.lat, lng: coordinate.lng });
+            setSelectedRegionId(coordinate.regionId);
+            setSelectedRegion(location.state.locationInfo.regionName);
+            setPaths(
+              mockData.filter(
+                (e) => e.name === location.state.locationInfo.regionName
+              )[0].paths
+            );
+            setCenter(
+              mockData.filter(
+                (e) => e.name === location.state.locationInfo.regionName
+              )[0].center
+            );
+            setZoomLevel(
+              mockData.filter(
+                (e) => e.name === location.state.locationInfo.regionName
+              )[0].zoomLevel
+            );
+          }
+        }}
+      />
       <LoadScript id="script-loader" googleMapsApiKey={google_maps_api_key}>
         <GoogleMap
           onLoad={(e) => {

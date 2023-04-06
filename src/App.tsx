@@ -38,7 +38,16 @@ function AppWithRecoil() {
       {!auth && <Route path={PATHS.LOGIN} element={<LoginPage />} />}
       {auth && (
         <>
-          <Route path={PATHS.MAP} element={<MapPage />} />
+          <Route
+            path={PATHS.MAP}
+            element={
+              location.state !== null && location.state.isEdit !== null ? (
+                <MapPage />
+              ) : (
+                <MainPage />
+              )
+            }
+          />
           <Route
             path={PATHS.TREASUREFABRICATION}
             element={<TreasureCreationPage />}
