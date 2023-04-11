@@ -1,10 +1,10 @@
-import Loading from "react-loading";
 import { useLocationInfo } from "../react-query/hooks";
 import {
   useSetTreasure,
   useTreasure,
 } from "../recoil-store/treasureStoreHooks";
 import { StateSetter } from "./StateSetter";
+import { Loader } from "./Loader";
 
 export type LocationGetterProps = { locationId: number; regionName: string };
 
@@ -16,7 +16,7 @@ export function LocationGetter({
   const setTreasure = useSetTreasure();
   const treasure = useTreasure();
   if (locationInfo.isFetching) {
-    return <Loading />;
+    return <Loader />;
   }
   const locationInfoReal = locationInfo.locationInfo;
   return (
