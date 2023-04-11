@@ -6,6 +6,7 @@ import {
   apiDeleteHint,
   apiGetHintByTreasureId,
   apiGetLocation,
+  apiGetTreasureByOwnerId,
   apiGetTreasureByTreasureId,
   apiGetUser,
   apiLogin,
@@ -181,4 +182,14 @@ export const useHintDeleteMutation = ({
       onError?.(err);
     },
   });
+};
+
+export const useTreasureByOwnerId = (ownerId: number) => {
+  const { data, ...rest } = useQuery({
+    queryKey: ["TreasureByOwnerId", ownerId],
+    queryFn: () => apiGetTreasureByOwnerId(ownerId),
+    ...defaultQueryOptions,
+  });
+  const treasures: Treasure[] = data?.data.entities;
+  return { treasuresByOwnerId: treasures, ...rest };
 };
