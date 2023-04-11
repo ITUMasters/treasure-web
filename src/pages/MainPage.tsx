@@ -6,7 +6,7 @@ import Background from "../assets/images/iconicBG.png";
 import { useSetAuth } from "../recoil-store/auth/AuthStoreHooks";
 import { useId, useSetId } from "../recoil-store/auth/IdStoreHooks";
 import { useUser } from "../react-query/hooks";
-import ReactLoading from "react-loading";
+import { Loader } from "../ui/Loader";
 
 export function MainPage() {
   const navigate = useNavigate();
@@ -23,16 +23,7 @@ export function MainPage() {
 
   const { user, isFetching } = useUser(userId);
   if (isFetching) {
-    return (
-      <div className="flex justify-center mt-40 ">
-        <ReactLoading
-          type="spinningBubbles"
-          color={"#5B3DF6"}
-          height={"15%"}
-          width={"15%"}
-        />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (

@@ -17,9 +17,9 @@ export function CreatedTreasureCard({
   treasureId,
 }: CreatedTreasureCardProps) {
   var difficultyColor = "#30B526";
-  if (difficulty === "Medium") {
+  if (difficulty === "medium") {
     difficultyColor = "#FF950F";
-  } else if (difficulty === "Hard") {
+  } else if (difficulty === "hard") {
     difficultyColor = "#E8311A";
   }
   const navigate = useNavigate();
@@ -28,14 +28,14 @@ export function CreatedTreasureCard({
       style={{
         backgroundColor: "#D9D9D9",
         marginLeft: 52,
-        marginRight: 400,
+        width: 580,
         marginTop: 12,
         height: 48,
         borderRadius: 10,
       }}
     >
-      <div className="flex flex-row">
-        <div style={{ width: 160, marginTop: 12, marginLeft: 16 }}>
+      <div className="flex flex-row flex-1">
+        <div style={{ width: 200, marginTop: 12, marginLeft: 16 }}>
           <p style={{ fontWeight: "bold" }} className="text-black text-5l ">
             {id}. {name}
           </p>
@@ -45,7 +45,7 @@ export function CreatedTreasureCard({
           style={{
             width: 64,
             marginTop: 12,
-            marginLeft: 64,
+            marginLeft: 32,
           }}
         >
           <p
@@ -55,12 +55,9 @@ export function CreatedTreasureCard({
             }}
             className="text-black text-5l"
           >
-            {difficulty}
+            {difficulty[0].toUpperCase() +
+              difficulty.substring(1, difficulty.length)}
           </p>
-        </div>
-
-        <div style={{ width: 260, marginTop: 12, marginLeft: 64 }}>
-          <p className="text-black text-bold text-5l">{timeLeft}</p>
         </div>
 
         <div style={{ width: 96, marginTop: 8, marginLeft: 64 }}>
@@ -78,16 +75,13 @@ export function CreatedTreasureCard({
           </div>
         </div>
 
-        <div style={{ width: 96, marginTop: 8, marginLeft: 64 }}>
-          <div className="w-24">
-            <Button size="small">Start</Button>
-          </div>
-        </div>
-
-        <div style={{ width: 32, marginTop: 8, marginLeft: 64 }}>
-          <div className="w-24">
-            <Icons icon="leaderboard" width="32" height="32"></Icons>
-          </div>
+        <div
+          className="w-24 flex justify-end mt-2"
+          onClick={() => {
+            navigate(PATHS.LEADERBOARD, { state: { treasureId: treasureId } });
+          }}
+        >
+          <Icons icon="leaderboard" width="32" height="32"></Icons>
         </div>
       </div>
     </div>

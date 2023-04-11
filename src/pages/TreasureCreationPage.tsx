@@ -21,7 +21,7 @@ import { useNotify } from "../hooks/useNotify";
 import { useId } from "../recoil-store/auth/IdStoreHooks";
 import { Hardness } from "../react-query/types";
 import { hint } from "../recoil-store/treasureStore";
-import Loading from "react-loading";
+import { Loader } from "../ui/Loader";
 
 export function TreasureCreationPage() {
   const navigate = useNavigate();
@@ -121,7 +121,7 @@ export function TreasureCreationPage() {
     LocationInfoSubmitMutation.isLoading ||
     TreasureSubmissionMutation.isLoading
   ) {
-    return <Loading />;
+    return <Loader />;
   }
   if (HintCreationMutation.isSuccess) {
     setTreasure({

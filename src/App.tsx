@@ -54,7 +54,16 @@ function AppWithRecoil() {
           />
           <Route path={PATHS.MAINPAGE} element={<MainPage />} />
           <Route path={PATHS.CREATEDS} element={<Createds />} />
-          <Route path={PATHS.LEADERBOARD} element={<Leaderboard />} />
+          <Route
+            path={PATHS.LEADERBOARD}
+            element={
+              location.state !== null && location.state.isTreasure !== null ? (
+                <Leaderboard />
+              ) : (
+                <MainPage />
+              )
+            }
+          />
           <Route
             path={PATHS.EDITTREASURE}
             element={

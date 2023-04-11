@@ -74,3 +74,11 @@ export const apiDeleteHint = (hintId: number) => {
     method: "delete",
   });
 };
+
+export const apiGetTreasureByOwnerId = (ownerId: number) => {
+  return axios({
+    url: "/treasure",
+    method: "get",
+    params: { ownerId: ownerId },
+  });
+};

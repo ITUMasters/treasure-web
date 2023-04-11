@@ -20,13 +20,13 @@ import {
   useTreasureByTreasureId,
   useTreasureUpdateMutation,
 } from "../react-query/hooks";
-import Loading from "react-loading";
 import { StateSetter } from "../ui/StateSetter";
 import { hint } from "../recoil-store/treasureStore";
 import { LocationGetter } from "../ui/LocationGetter";
 import { formatError } from "../utils/formatError";
 import { useNotify } from "../hooks/useNotify";
 import { Hardness } from "../react-query/types";
+import { Loader } from "../ui/Loader";
 
 export function TreasureEditPage() {
   const navigate = useNavigate();
@@ -171,7 +171,7 @@ export function TreasureEditPage() {
     });
   };
   if (isFetching || hintsByTresureId.isFetching) {
-    return <Loading />;
+    return <Loader />;
   }
   if (
     HintCreationMutation.isLoading ||
@@ -180,7 +180,7 @@ export function TreasureEditPage() {
     HintUpdateMutation.isLoading ||
     HintDeleteMutation.isLoading
   ) {
-    return <Loading />;
+    return <Loader />;
   }
   if (TreasureUpdateMutation.isSuccess) {
     setTreasure({

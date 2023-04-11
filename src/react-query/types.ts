@@ -18,6 +18,7 @@ export type LocationInfo = {
 };
 
 export type Treasure = {
+  id?: number;
   treasureId?: number;
   locationId?: number;
   timeLimit?: number;
