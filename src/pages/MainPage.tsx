@@ -1,18 +1,21 @@
 import React from "react";
 import { Button } from "../ui/Button";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { PATHS } from "../consts/paths";
 import Background from "../assets/images/iconicBG.png";
 import { useSetAuth } from "../recoil-store/auth/AuthStoreHooks";
 import { useId, useSetId } from "../recoil-store/auth/IdStoreHooks";
 import { useUser } from "../react-query/hooks";
 import { Loader } from "../ui/Loader";
+import { useSetTreasure } from "../recoil-store/treasureStoreHooks";
 
 export function MainPage() {
   const navigate = useNavigate();
   const setAuth = useSetAuth();
   const setId = useSetId();
   const userId = useId();
+  const setTreasure = useSetTreasure();
+  const location = useLocation();
 
   const logout = () => {
     setId(0);
@@ -20,6 +23,27 @@ export function MainPage() {
     localStorage.removeItem("access_token");
     localStorage.removeItem("remember_me");
   };
+  if (
+    location !== null &&
+    location.state !== null &&
+    location.state.clearTreasure !== null &&
+    location.state.clearTreasure
+  ) {
+    setTreasure({
+      name: "",
+      regionName: "",
+      difficulty: "easy",
+      coordinate: {
+        name: "My Treasure",
+        lat: 0,
+        lng: 0,
+        regionId: -1,
+      },
+      hints: [{ content: "", cost: "", hintId: 0 }],
+      deletedHints: [],
+      images: [],
+    });
+  }
 
   const { user, isFetching } = useUser(userId);
   if (isFetching) {
