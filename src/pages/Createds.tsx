@@ -16,7 +16,7 @@ export function Createds() {
   return (
     <div className="bg-bgColor min-h-screen flex flex-col min-w-fit">
       <div
-        className="bg-repeat min-h-screen w-full"
+        className="bg-repeat min-h-screen w-full mb-4"
         style={{
           backgroundImage: `url(${Background})`,
         }}

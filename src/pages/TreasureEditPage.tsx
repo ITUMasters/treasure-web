@@ -183,21 +183,7 @@ export function TreasureEditPage() {
     return <Loader />;
   }
   if (TreasureUpdateMutation.isSuccess) {
-    setTreasure({
-      name: "",
-      regionName: "",
-      difficulty: "easy",
-      coordinate: {
-        name: "My Treasure",
-        lat: 0,
-        lng: 0,
-        regionId: -1,
-      },
-      hints: [{ content: "", cost: "", hintId: 0 }],
-      deletedHints: [],
-      images: [],
-    });
-    navigate(PATHS.MAINPAGE);
+    navigate(PATHS.MAINPAGE, { state: { clearTreasure: true } });
   }
 
   const hints = hintsByTresureId.hintsByTresureId;
