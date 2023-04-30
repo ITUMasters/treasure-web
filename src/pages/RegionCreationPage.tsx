@@ -1,10 +1,19 @@
-import { LoadScript, GoogleMap, DrawingManager } from "@react-google-maps/api";
+import {
+  LoadScript,
+  GoogleMap,
+  DrawingManager,
+  Marker,
+} from "@react-google-maps/api";
 import React, { useEffect, useState } from "react";
 import { AiFillDelete } from "react-icons/ai";
+import { Input } from "../ui/Input";
+import { Button } from "../ui/Button";
 
 export function RegionCreationPage() {
   const [zoomLevel, setZoomLevel] = useState(15);
   const [mapInstance, setMapInstace] = useState(null as any);
+  const [regionName, setRegionName] = useState("");
+
   const [center, setCenter] = useState({
     lat: 41.10571,
     lng: 29.02525,
@@ -14,10 +23,19 @@ export function RegionCreationPage() {
   const google_maps_api_key = process.env.REACT_APP_GOOGLE_MAPS_KEY ?? "";
   const onLoad = (drawingManager: google.maps.drawing.DrawingManager) => {};
   const [lastPolygon, setLastPolygon] = useState<google.maps.Polygon>();
+  const [isMarkerPlaced, setIsMarkerPlaced] = useState(false);
+
+  const [markerCoords, setMarkerCoords] = useState({ lat: 0, lng: 0 });
 
   const onPolygonComplete = (polygon: google.maps.Polygon) => {
     const vertices = polygon.getPath();
-    polygon.setEditable(true);
+    //polygon.setEditable(true);
+    polygon.addListener("click", (e: google.maps.MapMouseEvent) => {
+      if (e.latLng !== null) {
+        setMarkerCoords({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+        setIsMarkerPlaced(true);
+      }
+    });
 
     const area = google.maps.geometry.spherical.computeArea(polygon.getPath());
     if (area >= 50) {
@@ -35,6 +53,25 @@ export function RegionCreationPage() {
     if (lastPolygon !== undefined) {
       lastPolygon.setMap(null);
       setLastPolygon(undefined);
+      setIsMarkerPlaced(false);
+    }
+  };
+
+  const submitRegion = () => {
+    if (lastPolygon !== undefined) {
+      const vertices = lastPolygon.getPath();
+      let points = [];
+      for (let i = 0; i < vertices.getLength(); i++) {
+        const xy = vertices.getAt(i);
+        points.push({ latitude: xy.lat(), longitude: xy.lng() });
+      }
+
+      const regionData = {
+        points: points,
+        center: { latitude: markerCoords.lat, longitude: markerCoords.lng },
+        zoomLevel: zoomLevel,
+      };
+      //BURADA regionData'yi submitleyecegim.
     }
   };
 
@@ -60,6 +97,11 @@ export function RegionCreationPage() {
         libraries={libraries}
       >
         <GoogleMap
+          onZoomChanged={() => {
+            if (mapInstance !== null && mapInstance !== undefined) {
+              setZoomLevel(mapInstance.getZoom());
+            }
+          }}
           onLoad={(e) => {
             setMapInstace(e);
           }}
@@ -78,6 +120,10 @@ export function RegionCreationPage() {
           {lastPolygon === undefined && (
             <DrawingManager
               options={{
+                polygonOptions: {
+                  fillColor: "#E5E542",
+                  strokeColor: "#9329CC",
+                },
                 drawingControlOptions: {
                   drawingModes: new Array(
                     "polygon" as google.maps.drawing.OverlayType
@@ -88,17 +134,34 @@ export function RegionCreationPage() {
               onPolygonComplete={onPolygonComplete}
             />
           )}
+          {lastPolygon !== undefined && isMarkerPlaced && (
+            <Marker position={markerCoords} />
+          )}
         </GoogleMap>
       </LoadScript>
       {lastPolygon !== undefined && (
-        <div className="absolute top-20 right-1">
+        <div className="absolute top-20 right-2">
           <AiFillDelete
             fill="#5B3DF6"
-            className="w-12 h-12"
+            className="w-10 h-10"
             onClick={removePolygon}
           />
         </div>
       )}
+      <div className="absolute top-20 left-4 w-56 rounded-lg border-2 border-lightPurple">
+        <Input
+          title="Region Name"
+          value={regionName}
+          onChange={(e) => {
+            setRegionName(e.target.value);
+          }}
+        />
+      </div>
+      <div className="absolute bottom-12 w-40">
+        <Button size="large" onClick={submitRegion}>
+          Submit Region
+        </Button>
+      </div>
     </div>
   );
 }
