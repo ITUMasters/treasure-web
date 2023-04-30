@@ -4,7 +4,7 @@ import {
   DrawingManager,
   Marker,
 } from "@react-google-maps/api";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { AiFillDelete } from "react-icons/ai";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
@@ -74,6 +74,13 @@ export function RegionCreationPage() {
       //BURADA regionData'yi submitleyecegim.
     }
   };
+
+  const isButtonDisabled = useMemo(() => {
+    const c1 = lastPolygon === undefined;
+    const c2 = !isMarkerPlaced;
+    const c3 = regionName.trim() === "" || regionName[0] === " ";
+    return c1 || c2 || c3;
+  }, [lastPolygon, isMarkerPlaced, regionName]);
 
   useEffect(() => {
     if (lastPolygon !== undefined) {
@@ -158,7 +165,12 @@ export function RegionCreationPage() {
         />
       </div>
       <div className="absolute bottom-12 w-40">
-        <Button size="large" onClick={submitRegion}>
+        <Button
+          size="large"
+          onClick={submitRegion}
+          disabled={isButtonDisabled}
+          HasFadeColor={isButtonDisabled}
+        >
           Submit Region
         </Button>
       </div>
