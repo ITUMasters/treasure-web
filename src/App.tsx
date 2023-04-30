@@ -14,6 +14,7 @@ import { useAuth } from "./recoil-store/auth/AuthStoreHooks";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import { TreasureEditPage } from "./pages/TreasureEditPage";
+import { RegionCreationPage } from "./pages/RegionCreationPage";
 
 export const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ function App() {
 function AppWithRecoil() {
   const auth = useAuth();
   const location = useLocation();
+
   return (
     <Routes>
       {!auth && <Route path={PATHS.LOGIN} element={<LoginPage />} />}
@@ -75,6 +77,9 @@ function AppWithRecoil() {
             }
           />
         </>
+      )}
+      {auth && (
+        <Route path={PATHS.REGIONCREATION} element={<RegionCreationPage />} />
       )}
       {!auth && <Route path="*" element={<LoginPage />} />}
       {auth && <Route path="*" element={<MainPage />} />}

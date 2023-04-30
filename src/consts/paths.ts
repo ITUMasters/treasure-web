@@ -6,4 +6,5 @@ export const PATHS = {
   CREATEDS: "/createds",
   LEADERBOARD: "/leaderboard",
   EDITTREASURE: "/editTreasure",
+  REGIONCREATION: "/createRegion",
 };
