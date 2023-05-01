@@ -5,6 +5,7 @@ import {
   apiCreateRegion,
   apiCreateTreasure,
   apiDeleteHint,
+  apiGetAllRegions,
   apiGetHintByTreasureId,
   apiGetLocation,
   apiGetTreasureByOwnerId,
@@ -16,7 +17,7 @@ import {
   apiUpdateTreasure,
 } from "./queries";
 import { QUERY_KEYS } from "./queryKeys";
-import { Hint, LocationInfo, Treasure, User } from "./types";
+import { GeneralRegion, Hint, LocationInfo, Treasure, User } from "./types";
 
 type CustomMutationProps = {
   onSuccess?: (data: any) => void;
@@ -208,4 +209,14 @@ export const useRegionCreationMutation = ({
       onError?.(err);
     },
   });
+};
+
+export const useRegions = () => {
+  const { data, ...rest } = useQuery({
+    queryKey: ["AllRegions"],
+    queryFn: apiGetAllRegions,
+    ...defaultQueryOptions,
+  });
+  const regions: GeneralRegion[] = data?.data.entities;
+  return { regions: regions, ...rest };
 };
