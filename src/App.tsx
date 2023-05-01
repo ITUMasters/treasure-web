@@ -95,7 +95,6 @@ function AppWithRecoil() {
           setId(0);
           setAuth(false);
           localStorage.removeItem("access_token");
-          localStorage.removeItem("remember_me");
         }}
       />
     </>
