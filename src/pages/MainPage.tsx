@@ -89,6 +89,11 @@ export function MainPage() {
             Created Treasures
           </Button>
         </div>
+        <div className="w-52 mt-8 ml-12">
+          <Button size="xlarge" onClick={() => navigate(PATHS.REGIONCREATION)}>
+            Create Region
+          </Button>
+        </div>
       </div>
     </div>
   );

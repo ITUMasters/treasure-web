@@ -1,5 +1,5 @@
 import { axios } from "../react-query";
-import { Hint, LocationInfo, Treasure } from "./types";
+import { GeneralRegion, Hint, LocationInfo, Treasure } from "./types";
 
 export const apiLogin = (data: { email: string; password: string }) => {
   return axios({ url: "/user/login", method: "post", data });
@@ -80,5 +80,13 @@ export const apiGetTreasureByOwnerId = (ownerId: number) => {
     url: "/treasure",
     method: "get",
     params: { ownerId: ownerId },
+  });
+};
+
+export const apiCreateRegion = (data: GeneralRegion) => {
+  return axios({
+    url: "/region",
+    method: "post",
+    data,
   });
 };
