@@ -18,60 +18,18 @@ import { GeoJSONToPolyLine } from "../utils/GeoJSONToPolyLine";
 import { PolyLineCoordinates } from "../consts/PolyLineCoordinates";
 import { StateSetter } from "../ui/StateSetter";
 import { coordinateType } from "../recoil-store/treasureStore";
+import { useRegions } from "../react-query/hooks";
+import { Loader } from "../ui/Loader";
+import { AdjustRegionsData } from "../utils/AdjustRegionsData";
 
 //TODO: There is type error regarding to InfoWindow (I could not solved yet!)
 export function MapPage() {
+  const regionsData = useRegions();
   const [center, setCenter] = useState({
     lat: 41.10571,
     lng: 29.02525,
   });
   const ituPath = GeoJSONToPolyLine(PolyLineCoordinates.ITU);
-  const metuPath = GeoJSONToPolyLine(PolyLineCoordinates.METU);
-  const tobbPath = GeoJSONToPolyLine(PolyLineCoordinates.TOBB);
-  const bilkentPath = GeoJSONToPolyLine(PolyLineCoordinates.Bilkent);
-
-  const mockData = [
-    {
-      name: "ITU",
-      center: {
-        lat: 41.10571,
-        lng: 29.02525,
-      },
-      paths: ituPath,
-      zoomLevel: 15,
-      regionId: 7,
-    },
-    {
-      name: "METU",
-      center: {
-        lat: 39.88252,
-        lng: 32.77875,
-      },
-      paths: metuPath,
-      zoomLevel: 13,
-      regionId: 25,
-    },
-    {
-      name: "TOBB",
-      center: {
-        lat: 39.92133,
-        lng: 32.7983,
-      },
-      paths: tobbPath,
-      zoomLevel: 16,
-      regionId: -1,
-    },
-    {
-      name: "Bilkent",
-      center: {
-        lat: 39.86539,
-        lng: 32.7443,
-      },
-      paths: bilkentPath,
-      zoomLevel: 14,
-      regionId: -1,
-    },
-  ];
   const [paths, setPaths] = useState(ituPath);
   const options = {
     strokeColor: "#9A4FE9",
@@ -111,6 +69,15 @@ export function MapPage() {
   const treasureIdFromRouter = location.state.treasureId;
   console.log(treasureIdFromRouter);
 
+  if (regionsData.isLoading) {
+    return <Loader />;
+  }
+
+  const allRegions = regionsData.regions;
+  const adjustedRegionData = AdjustRegionsData(allRegions);
+
+  console.log(adjustedRegionData);
+
   return (
     <div className="flex items-center justify-center flex-col">
       <StateSetter
@@ -128,17 +95,17 @@ export function MapPage() {
             setSelectedRegionId(coordinate.regionId);
             setSelectedRegion(location.state.locationInfo.regionName);
             setPaths(
-              mockData.filter(
+              adjustedRegionData.filter(
                 (e) => e.name === location.state.locationInfo.regionName
               )[0].paths
             );
             setCenter(
-              mockData.filter(
+              adjustedRegionData.filter(
                 (e) => e.name === location.state.locationInfo.regionName
               )[0].center
             );
             setZoomLevel(
-              mockData.filter(
+              adjustedRegionData.filter(
                 (e) => e.name === location.state.locationInfo.regionName
               )[0].zoomLevel
             );
@@ -239,7 +206,7 @@ export function MapPage() {
         </Button>
       </div>
       <div className="absolute top-24 right-4 w-32">
-        {mockData.map((element) => (
+        {adjustedRegionData.map((element) => (
           <div className="mt-2" key={element.name}>
             <Button
               size="medium"
@@ -251,7 +218,7 @@ export function MapPage() {
                 setZoomLevel(element.zoomLevel);
                 setMarkerPos(element.center);
                 setPrevMarkerPos(element.center);
-                setSelectedRegionId(element.regionId);
+                setSelectedRegionId(element.regionId as number);
               }}
             >
               {element.name}
