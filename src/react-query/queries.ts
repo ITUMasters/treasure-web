@@ -90,3 +90,10 @@ export const apiCreateRegion = (data: GeneralRegion) => {
     data,
   });
 };
+
+export const apiGetAllRegions = () => {
+  return axios({
+    url: "/region",
+    method: "get",
+  });
+};
