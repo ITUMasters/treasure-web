@@ -52,7 +52,7 @@ export function MapPage() {
   });
 
   const [selectedRegion, setSelectedRegion] = useState("ITU");
-  const [selectedRegionId, setSelectedRegionId] = useState(7); //TODO: Suan default itu region idsini donuyorum.
+  const [selectedRegionId, setSelectedRegionId] = useState(46); //TODO: Suan default itu region idsini donuyorum.
   const [zoomLevel, setZoomLevel] = useState(15);
   const navigate = useNavigate();
   const setTreasure = useSetTreasure();
@@ -67,7 +67,6 @@ export function MapPage() {
   const location = useLocation();
   const isEdit = location.state.isEdit;
   const treasureIdFromRouter = location.state.treasureId;
-  console.log(treasureIdFromRouter);
 
   if (regionsData.isLoading) {
     return <Loader />;
@@ -75,8 +74,6 @@ export function MapPage() {
 
   const allRegions = regionsData.regions;
   const adjustedRegionData = AdjustRegionsData(allRegions);
-
-  console.log(adjustedRegionData);
 
   return (
     <div className="flex items-center justify-center flex-col">

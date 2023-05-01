@@ -27,6 +27,9 @@ import { formatError } from "../utils/formatError";
 import { useNotify } from "../hooks/useNotify";
 import { Hardness } from "../react-query/types";
 import { Loader } from "../ui/Loader";
+import { AxiosError } from "axios";
+import { useSetId } from "../recoil-store/auth/IdStoreHooks";
+import { useSetAuth } from "../recoil-store/auth/AuthStoreHooks";
 
 export function TreasureEditPage() {
   const navigate = useNavigate();
@@ -65,10 +68,19 @@ export function TreasureEditPage() {
     return c1 || c2 || c3;
   }, [treasure]);
 
+  const setId = useSetId();
+  const setAuth = useSetAuth();
   const HintDeleteMutation = useHintDeleteMutation({
     onSuccess: (res) => {},
     onError: (error) => {
       const err = formatError(error);
+      const errFormated = error as AxiosError;
+      const errorData = (errFormated.response?.data as any).error;
+      if (errorData === "jwt expired") {
+        setId(0);
+        setAuth(false);
+        localStorage.removeItem("access_token");
+      }
       if (err) {
         notify.error("Hint Deletion Fail\n" + err);
       }
@@ -83,6 +95,13 @@ export function TreasureEditPage() {
     onSuccess: (res) => {},
     onError: (error) => {
       const err = formatError(error);
+      const errFormated = error as AxiosError;
+      const errorData = (errFormated.response?.data as any).error;
+      if (errorData === "jwt expired") {
+        setId(0);
+        setAuth(false);
+        localStorage.removeItem("access_token");
+      }
       if (err) {
         notify.error("Hint Creation Fail\n" + err);
       }
@@ -102,6 +121,13 @@ export function TreasureEditPage() {
     onSuccess: (res) => {},
     onError: (error) => {
       const err = formatError(error);
+      const errFormated = error as AxiosError;
+      const errorData = (errFormated.response?.data as any).error;
+      if (errorData === "jwt expired") {
+        setId(0);
+        setAuth(false);
+        localStorage.removeItem("access_token");
+      }
       if (err) {
         notify.error("Hint Update Fail\n" + err);
       }
@@ -134,6 +160,13 @@ export function TreasureEditPage() {
     },
     onError: (error) => {
       const err = formatError(error);
+      const errFormated = error as AxiosError;
+      const errorData = (errFormated.response?.data as any).error;
+      if (errorData === "jwt expired") {
+        setId(0);
+        setAuth(false);
+        localStorage.removeItem("access_token");
+      }
       if (err) {
         notify.error("Treasure Update Fail\n" + err);
       }
@@ -155,6 +188,13 @@ export function TreasureEditPage() {
     },
     onError: (error) => {
       const err = formatError(error);
+      const errFormated = error as AxiosError;
+      const errorData = (errFormated.response?.data as any).error;
+      if (errorData === "jwt expired") {
+        setId(0);
+        setAuth(false);
+        localStorage.removeItem("access_token");
+      }
       if (err) {
         notify.error("LocationInfo Update is failed\n" + err);
       }
