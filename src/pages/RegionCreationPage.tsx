@@ -14,6 +14,9 @@ import { useNotify } from "../hooks/useNotify";
 import { GeneralRegion } from "../react-query/types";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../consts/paths";
+import { AxiosError } from "axios";
+import { useSetId } from "../recoil-store/auth/IdStoreHooks";
+import { useSetAuth } from "../recoil-store/auth/AuthStoreHooks";
 
 export function RegionCreationPage() {
   const [zoomLevel, setZoomLevel] = useState(15);
@@ -46,10 +49,6 @@ export function RegionCreationPage() {
     const area = google.maps.geometry.spherical.computeArea(polygon.getPath());
     if (area >= 50) {
       setLastPolygon(polygon);
-      for (let i = 0; i < vertices.getLength(); i++) {
-        const xy = vertices.getAt(i);
-        console.log(xy.lat(), " ", xy.lng());
-      }
     } else {
       polygon.setMap(null);
     }
@@ -64,6 +63,8 @@ export function RegionCreationPage() {
   };
   const notify = useNotify();
   const navigate = useNavigate();
+  const setId = useSetId();
+  const setAuth = useSetAuth();
   const RegionCreationMutation = useRegionCreationMutation({
     onSuccess: (res) => {
       console.log("Success");
@@ -72,6 +73,13 @@ export function RegionCreationPage() {
     },
     onError: (error) => {
       const err = formatError(error);
+      const errFormated = error as AxiosError;
+      const errorData = (errFormated.response?.data as any).error;
+      if (errorData === "jwt expired") {
+        setId(0);
+        setAuth(false);
+        localStorage.removeItem("access_token");
+      }
       if (err) {
         notify.error(err);
       }
@@ -143,7 +151,7 @@ export function RegionCreationPage() {
           zoom={zoomLevel}
           mapContainerStyle={{
             width: "100%",
-            height: "100%",
+            height: "80%",
             position: "absolute",
             margin: 0,
             padding: 0,
