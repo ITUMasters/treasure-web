@@ -45,3 +45,19 @@ export type Hint = {
 };
 
 export type Hardness = "easy" | "medium" | "hard" | "insane";
+
+export type GeneralRegion = {
+  id?: number;
+  name: string;
+  centerId?: number;
+  zoomLevel: number;
+  center: SimpleCoord;
+  paths: SimpleCoord[];
+};
+
+export type SimpleCoord = {
+  id?: number;
+  latitude: number;
+  longitude: number;
+  regionId?: number;
+};

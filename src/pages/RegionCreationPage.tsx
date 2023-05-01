@@ -8,6 +8,12 @@ import React, { useEffect, useState, useMemo } from "react";
 import { AiFillDelete } from "react-icons/ai";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
+import { useRegionCreationMutation } from "../react-query/hooks";
+import { formatError } from "../utils/formatError";
+import { useNotify } from "../hooks/useNotify";
+import { GeneralRegion } from "../react-query/types";
+import { useNavigate } from "react-router-dom";
+import { PATHS } from "../consts/paths";
 
 export function RegionCreationPage() {
   const [zoomLevel, setZoomLevel] = useState(15);
@@ -56,22 +62,43 @@ export function RegionCreationPage() {
       setIsMarkerPlaced(false);
     }
   };
+  const notify = useNotify();
+  const navigate = useNavigate();
+  const RegionCreationMutation = useRegionCreationMutation({
+    onSuccess: (res) => {
+      console.log("Success");
+      navigate(PATHS.MAINPAGE);
+      notify.success("Region is created!");
+    },
+    onError: (error) => {
+      const err = formatError(error);
+      if (err) {
+        notify.error(err);
+      }
+    },
+  });
+
+  const createRegion = (regionData: GeneralRegion) => {
+    RegionCreationMutation.mutate(regionData);
+  };
 
   const submitRegion = () => {
     if (lastPolygon !== undefined) {
       const vertices = lastPolygon.getPath();
-      let points = [];
+      let paths = [];
       for (let i = 0; i < vertices.getLength(); i++) {
         const xy = vertices.getAt(i);
-        points.push({ latitude: xy.lat(), longitude: xy.lng() });
+        paths.push({ latitude: xy.lat(), longitude: xy.lng() });
       }
 
       const regionData = {
-        points: points,
+        name: regionName,
+        paths: paths,
         center: { latitude: markerCoords.lat, longitude: markerCoords.lng },
         zoomLevel: zoomLevel,
       };
-      //BURADA regionData'yi submitleyecegim.
+
+      createRegion(regionData);
     }
   };
 
