@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   apiCreateHint,
   apiCreateLocation,
+  apiCreateRegion,
   apiCreateTreasure,
   apiDeleteHint,
   apiGetHintByTreasureId,
@@ -192,4 +193,19 @@ export const useTreasureByOwnerId = (ownerId: number) => {
   });
   const treasures: Treasure[] = data?.data.entities;
   return { treasuresByOwnerId: treasures, ...rest };
+};
+
+export const useRegionCreationMutation = ({
+  onSuccess,
+  onError,
+}: CustomMutationProps = {}) => {
+  return useMutation({
+    mutationFn: apiCreateRegion,
+    onSuccess: (data) => {
+      onSuccess?.(data);
+    },
+    onError: (err) => {
+      onError?.(err);
+    },
+  });
 };
