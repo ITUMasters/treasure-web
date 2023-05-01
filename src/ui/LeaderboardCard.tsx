@@ -10,11 +10,9 @@ export function LeaderboardCard({
 }: LeaderboardCardProps) {
   return (
     <div
-      className="flex flex-row"
+      className="flex flex-row w-[32rem]"
       style={{
         backgroundColor: "#D9D9D9",
-        marginLeft: 52,
-        marginRight: 1000,
         marginTop: 12,
         height: 48,
         borderRadius: 10,

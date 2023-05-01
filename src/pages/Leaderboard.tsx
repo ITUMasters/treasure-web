@@ -1,5 +1,5 @@
 import React from "react";
-import { LeaderboardCard } from "../ui/Leaderboard";
+import { LeaderboardCard } from "../ui/LeaderboardCard";
 import Background from "../assets/images/iconicBG.png";
 import { useLocation } from "react-router-dom";
 import { useTreasureByTreasureId } from "../react-query/hooks";
@@ -16,7 +16,7 @@ export function Leaderboard() {
   const currentTreasure = treasureById.treasureById;
   console.log("Treasure: ", currentTreasure);
   return (
-    <div className="bg-bgColor h-screen flex flex-col">
+    <div className="bg-bgColor h-screen flex flex-col min-w-fit">
       <div
         className="bg-repeat min-h-screen w-full flex flex-col"
         style={{
@@ -35,7 +35,7 @@ export function Leaderboard() {
           </p>
         </div>
 
-        <div className="">
+        <div className="ml-8 mt-4">
           <LeaderboardCard
             rank={1}
             name={"Faruk Avcı"}
