@@ -18,10 +18,12 @@ import {
 } from "../react-query/hooks";
 import { formatError } from "../utils/formatError";
 import { useNotify } from "../hooks/useNotify";
-import { useId } from "../recoil-store/auth/IdStoreHooks";
+import { useId, useSetId } from "../recoil-store/auth/IdStoreHooks";
 import { Hardness } from "../react-query/types";
 import { hint } from "../recoil-store/treasureStore";
 import { Loader } from "../ui/Loader";
+import { AxiosError } from "axios";
+import { useSetAuth } from "../recoil-store/auth/AuthStoreHooks";
 
 export function TreasureCreationPage() {
   const navigate = useNavigate();
@@ -29,6 +31,8 @@ export function TreasureCreationPage() {
   const setTreasure = useSetTreasure();
   const notify = useNotify();
   const userId = useId();
+  const setId = useSetId();
+  const setAuth = useSetAuth();
 
   const onChange = (imageList: ImageListType) => {
     setTreasure({ ...treasure, images: imageList as never[] });
@@ -55,8 +59,15 @@ export function TreasureCreationPage() {
 
   const HintCreationMutation = useHintCreationMutation({
     onSuccess: (res) => {},
-    onError: (error) => {
+    onError: (error: any) => {
       const err = formatError(error);
+      const errFormated = error as AxiosError;
+      const errorData = (errFormated.response?.data as any).error;
+      if (errorData === "jwt expired") {
+        setId(0);
+        setAuth(false);
+        localStorage.removeItem("access_token");
+      }
       if (err) {
         notify.error("Hint Creation Fail\n" + err);
       }
@@ -80,6 +91,13 @@ export function TreasureCreationPage() {
     },
     onError: (error) => {
       const err = formatError(error);
+      const errFormated = error as AxiosError;
+      const errorData = (errFormated.response?.data as any).error;
+      if (errorData === "jwt expired") {
+        setId(0);
+        setAuth(false);
+        localStorage.removeItem("access_token");
+      }
       if (err) {
         notify.error("Treasure Creation Fail\n" + err);
       }
@@ -93,6 +111,12 @@ export function TreasureCreationPage() {
       name: treasure.name,
       ownerId: userId,
       timeLimit: 60,
+      gift:
+        treasure.difficulty === "easy"
+          ? 25
+          : treasure.difficulty === "medium"
+          ? 50
+          : 100,
     });
   };
 

@@ -22,6 +22,7 @@ export type Treasure = {
   treasureId?: number;
   locationId?: number;
   timeLimit?: number;
+  gift?: number;
   hardness: Hardness;
   name: string;
   ownerId?: number;
