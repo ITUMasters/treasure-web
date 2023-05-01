@@ -44,7 +44,6 @@ export function MainPage() {
       images: [],
     });
   }
-
   const { user, isFetching } = useUser(userId);
   if (isFetching) {
     return <Loader />;
