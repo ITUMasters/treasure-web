@@ -126,6 +126,13 @@ export function TreasureCreationPage() {
     },
     onError: (error) => {
       const err = formatError(error);
+      const errFormated = error as AxiosError;
+      const errorData = (errFormated.response?.data as any).error;
+      if (errorData === "jwt expired") {
+        setId(0);
+        setAuth(false);
+        localStorage.removeItem("access_token");
+      }
       if (err) {
         notify.error("LocationInfo Submission is failed\n" + err);
       }
