@@ -202,7 +202,7 @@ export function MapPage() {
           Submit Treasure Coordinate
         </Button>
       </div>
-      <div className="absolute top-24 right-4 w-32">
+      <div className="absolute top-24 right-4 w-40">
         {adjustedRegionData.map((element) => (
           <div className="mt-2" key={element.name}>
             <Button

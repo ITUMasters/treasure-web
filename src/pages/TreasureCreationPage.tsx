@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Input } from "../ui/Input";
 import { Checkbox } from "../ui/Checkbox";
 import { Button } from "../ui/Button";
@@ -15,6 +15,7 @@ import {
   useHintCreationMutation,
   useLocationInfoSubmitMutation,
   useTreasureSubmissionMutation,
+  useUploadImageMutation,
 } from "../react-query/hooks";
 import { formatError } from "../utils/formatError";
 import { useNotify } from "../hooks/useNotify";
@@ -33,6 +34,7 @@ export function TreasureCreationPage() {
   const userId = useId();
   const setId = useSetId();
   const setAuth = useSetAuth();
+  const [imageLink, setImageLink] = useState("");
 
   const onChange = (imageList: ImageListType) => {
     setTreasure({ ...treasure, images: imageList as never[] });
@@ -111,6 +113,7 @@ export function TreasureCreationPage() {
       name: treasure.name,
       ownerId: userId,
       timeLimit: 60,
+      photoLink: imageLink,
       gift:
         treasure.difficulty === "easy"
           ? 25
@@ -147,7 +150,37 @@ export function TreasureCreationPage() {
       latitude: treasure.coordinate.lat,
     });
   };
+
+  const uploadImageMutation = useUploadImageMutation({
+    onSuccess: (res) => {
+      setImageLink(res.data.fileName);
+      submitLocationInfo();
+    },
+    onError: (error) => {
+      const err = formatError(error);
+      const errFormated = error as AxiosError;
+      const errorData = (errFormated.response?.data as any).error;
+      if (errorData === "jwt expired" || errFormated.response?.status === 401) {
+        setId(0);
+        setAuth(false);
+        localStorage.removeItem("access_token");
+      }
+      if (err) {
+        notify.error("Image upload is failed\n" + err);
+      }
+    },
+  });
+
+  const uploadImage = () => {
+    if (treasure.images.length === 0 || treasure.images[0].file.size > 10000000)
+      return;
+    const formData = new FormData();
+    formData.append("image", treasure.images[0].file);
+    uploadImageMutation.mutate(formData);
+  };
+
   if (
+    uploadImageMutation.isLoading ||
     HintCreationMutation.isLoading ||
     LocationInfoSubmitMutation.isLoading ||
     TreasureSubmissionMutation.isLoading
@@ -171,6 +204,7 @@ export function TreasureCreationPage() {
     });
     navigate(PATHS.MAINPAGE);
   }
+
   return (
     <div className="bg-bgColor flex flex-row min-h-screen">
       <div
@@ -349,7 +383,7 @@ export function TreasureCreationPage() {
                     size="large"
                     disabled={isButtonDisabled}
                     HasFadeColor={isButtonDisabled}
-                    onClick={submitLocationInfo}
+                    onClick={uploadImage} //burayi submitLocationInfo yap!!.
                   >
                     Finish Production
                   </Button>

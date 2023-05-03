@@ -10,7 +10,7 @@ axios.interceptors.request.use(
   async function (config) {
     const access_token = localStorage.getItem("access_token");
     config.headers["Authorization"] = `Bearer ${access_token}`;
-    config.headers["Content-Type"] = "application/json";
+    //config.headers["Content-Type"] = "multipart/form-data";
     return config;
   },
   function (error) {

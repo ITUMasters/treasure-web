@@ -97,3 +97,14 @@ export const apiGetAllRegions = () => {
     method: "get",
   });
 };
+
+export const apiUploadImage = (formData: FormData) => {
+  return axios({
+    url: "/image/upload",
+    data: formData,
+    method: "post",
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
