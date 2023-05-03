@@ -37,7 +37,6 @@ export function RegionCreationPage() {
   const [markerCoords, setMarkerCoords] = useState({ lat: 0, lng: 0 });
 
   const onPolygonComplete = (polygon: google.maps.Polygon) => {
-    const vertices = polygon.getPath();
     //polygon.setEditable(true);
     polygon.addListener("click", (e: google.maps.MapMouseEvent) => {
       if (e.latLng !== null) {
