@@ -37,7 +37,6 @@ export function RegionCreationPage() {
   const [markerCoords, setMarkerCoords] = useState({ lat: 0, lng: 0 });
 
   const onPolygonComplete = (polygon: google.maps.Polygon) => {
-    const vertices = polygon.getPath();
     //polygon.setEditable(true);
     polygon.addListener("click", (e: google.maps.MapMouseEvent) => {
       if (e.latLng !== null) {
@@ -75,7 +74,7 @@ export function RegionCreationPage() {
       const err = formatError(error);
       const errFormated = error as AxiosError;
       const errorData = (errFormated.response?.data as any).error;
-      if (errorData === "jwt expired") {
+      if (errorData === "jwt expired" || errFormated.response?.status === 401) {
         setId(0);
         setAuth(false);
         localStorage.removeItem("access_token");
