@@ -15,6 +15,7 @@ import {
   apiUpdateHint,
   apiUpdateLocation,
   apiUpdateTreasure,
+  apiUploadImage,
 } from "./queries";
 import { QUERY_KEYS } from "./queryKeys";
 import { GeneralRegion, Hint, LocationInfo, Treasure, User } from "./types";
@@ -219,4 +220,19 @@ export const useRegions = () => {
   });
   const regions: GeneralRegion[] = data?.data.entities;
   return { regions: regions, ...rest };
+};
+
+export const useUploadImageMutation = ({
+  onSuccess,
+  onError,
+}: CustomMutationProps = {}) => {
+  return useMutation({
+    mutationFn: apiUploadImage,
+    onSuccess: (data) => {
+      onSuccess?.(data);
+    },
+    onError: (err) => {
+      onError?.(err);
+    },
+  });
 };

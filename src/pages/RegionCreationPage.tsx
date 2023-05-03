@@ -150,7 +150,7 @@ export function RegionCreationPage() {
           zoom={zoomLevel}
           mapContainerStyle={{
             width: "100%",
-            height: "80%",
+            height: "100%",
             position: "absolute",
             margin: 0,
             padding: 0,
