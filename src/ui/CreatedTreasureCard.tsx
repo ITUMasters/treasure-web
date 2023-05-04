@@ -23,6 +23,7 @@ export function CreatedTreasureCard({
     difficultyColor = "#E8311A";
   }
   const navigate = useNavigate();
+
   return (
     <div
       style={{

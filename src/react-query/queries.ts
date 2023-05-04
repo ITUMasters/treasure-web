@@ -108,3 +108,11 @@ export const apiUploadImage = (formData: FormData) => {
     },
   });
 };
+
+export const apiGetLeaderboardByTreasureId = (treasureId: number) => {
+  return axios({
+    url: "/treasure/"+treasureId.toString()+"/leaderboard",
+    method: "get",
+  });
+};
+
