@@ -31,7 +31,6 @@ export function Leaderboard() {
   }
   const currentTreasure = treasureById.treasureById;
   const leaderboard = leaderboardByTreasureId.leaderboard.leaderboard;
-  console.log(leaderboard);
   return (
     <div className="bg-bgColor h-screen flex flex-col min-w-fit">
       <div
