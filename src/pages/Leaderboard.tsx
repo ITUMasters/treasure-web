@@ -2,19 +2,36 @@ import React from "react";
 import { LeaderboardCard } from "../ui/LeaderboardCard";
 import Background from "../assets/images/iconicBG.png";
 import { useLocation } from "react-router-dom";
-import { useTreasureByTreasureId } from "../react-query/hooks";
+import { useLeaderboard, useTreasureByTreasureId } from "../react-query/hooks";
 import { Loader } from "../ui/Loader";
 
+const adjustTime = (time: number) => {
+  const day = Math.floor(time / (24 * 60 * 60));
+  time -= day * (24 * 60 * 60);
+  const hour = Math.floor(time / (60 * 60));
+  time -= hour * 60 * 60;
+  const minute = Math.floor(time / 60);
+  time -= minute * 60;
+  const second = Math.floor(time);
+  return (
+    "Found in: " +
+    (day > 0 ? day.toString() + " days " : "") +
+    (hour > 0 ? hour.toString() + " hour " : "") +
+    (minute > 0 ? minute.toString() + " minutes " : "") +
+    (second > 0 ? second.toString() + " second" : "")
+  );
+};
 export function Leaderboard() {
   const location = useLocation();
   const treasureId = location.state.treasureId;
   const treasureById = useTreasureByTreasureId(treasureId);
-
-  if (treasureById.isFetching) {
+  const leaderboardByTreasureId = useLeaderboard(treasureId);
+  if (treasureById.isFetching || leaderboardByTreasureId.isFetching) {
     return <Loader />;
   }
   const currentTreasure = treasureById.treasureById;
-  console.log("Treasure: ", currentTreasure);
+  const leaderboard = leaderboardByTreasureId.leaderboard.leaderboard;
+  console.log(leaderboard);
   return (
     <div className="bg-bgColor h-screen flex flex-col min-w-fit">
       <div
@@ -36,16 +53,14 @@ export function Leaderboard() {
         </div>
 
         <div className="ml-8 mt-4">
-          <LeaderboardCard
-            rank={1}
-            name={"Faruk Avcı"}
-            finishTime={"Found in: 17 hours 59 minutes"}
-          ></LeaderboardCard>
-          <LeaderboardCard
-            rank={2}
-            name={"Alp Kartal"}
-            finishTime={"Found in: 2 days 1 hour 59 minutes"}
-          ></LeaderboardCard>
+          {leaderboard.map((element: any, index: number) => (
+            <LeaderboardCard
+              key={index}
+              rank={element.rank}
+              name={element.user.name + " " + element.user.surname}
+              finishTime={adjustTime(element.time)}
+            ></LeaderboardCard>
+          ))}
         </div>
       </div>
     </div>

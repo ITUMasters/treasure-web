@@ -7,6 +7,7 @@ import {
   apiDeleteHint,
   apiGetAllRegions,
   apiGetHintByTreasureId,
+  apiGetLeaderboardByTreasureId,
   apiGetLocation,
   apiGetTreasureByOwnerId,
   apiGetTreasureByTreasureId,
@@ -235,4 +236,14 @@ export const useUploadImageMutation = ({
       onError?.(err);
     },
   });
+};
+
+export const useLeaderboard = (treasureId: number) => {
+  const { data, ...rest } = useQuery({
+    queryKey: ["Leaderboard", treasureId],
+    queryFn: () => apiGetLeaderboardByTreasureId(treasureId),
+    ...defaultQueryOptions,
+  });
+  const leaderboard: any = data?.data;
+  return { leaderboard: leaderboard, ...rest };
 };
