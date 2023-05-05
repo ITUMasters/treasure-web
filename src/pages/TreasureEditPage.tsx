@@ -70,7 +70,8 @@ export function TreasureEditPage() {
       }
     }
     const c3 = treasure.coordinate.regionId === -1;
-    return c1 || c2 || c3;
+    const c4 = treasure.images.length === 0;
+    return c1 || c2 || c3 || c4;
   }, [treasure]);
 
   const setId = useSetId();
@@ -294,8 +295,16 @@ export function TreasureEditPage() {
   }
   return (
     <div className="bg-bgColor flex flex-row min-h-screen">
-      <StateSetter setSpecificState={() => setIsUpload(true)} />
-      <ImageDownloader imageName={imageName as string} />
+      <StateSetter
+        setSpecificState={() => {
+          if (imageName !== null) {
+            setIsUpload(true);
+          }
+        }}
+      />
+      {imageName !== null && (
+        <ImageDownloader imageName={imageName as string} />
+      )}
       {!comingFromMap && (
         <>
           <LocationGetter
