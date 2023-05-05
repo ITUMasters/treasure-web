@@ -5,6 +5,7 @@ import {
   apiCreateRegion,
   apiCreateTreasure,
   apiDeleteHint,
+  apiDownloadImage,
   apiGetAllRegions,
   apiGetHintByTreasureId,
   apiGetLeaderboardByTreasureId,
@@ -246,4 +247,14 @@ export const useLeaderboard = (treasureId: number) => {
   });
   const leaderboard: any = data?.data;
   return { leaderboard: leaderboard, ...rest };
+};
+
+export const useDownloadedImage = (imageName: string) => {
+  const { data, ...rest } = useQuery({
+    queryKey: ["DownloadedImage", imageName],
+    queryFn: () => apiDownloadImage(imageName),
+    ...defaultQueryOptions,
+  });
+  const image: Blob = data?.data;
+  return { image: image, ...rest };
 };

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Input } from "../ui/Input";
 import { Checkbox } from "../ui/Checkbox";
 import { Button } from "../ui/Button";
@@ -19,6 +19,7 @@ import {
   useLocationUpdateMutation,
   useTreasureByTreasureId,
   useTreasureUpdateMutation,
+  useUploadImageMutation,
 } from "../react-query/hooks";
 import { StateSetter } from "../ui/StateSetter";
 import { hint } from "../recoil-store/treasureStore";
@@ -30,13 +31,16 @@ import { Loader } from "../ui/Loader";
 import { AxiosError } from "axios";
 import { useSetId } from "../recoil-store/auth/IdStoreHooks";
 import { useSetAuth } from "../recoil-store/auth/AuthStoreHooks";
+import { ImageDownloader } from "../ui/ImageDownloader";
 
 export function TreasureEditPage() {
   const navigate = useNavigate();
   const treasure = useTreasure();
   const setTreasure = useSetTreasure();
+  const [isUploadedNew, setIsUploadedNew] = useState(false);
 
   const onChange = (imageList: ImageListType) => {
+    setIsUploadedNew(true);
     setTreasure({ ...treasure, images: imageList as never[] });
   };
   const location = useLocation();
@@ -48,6 +52,7 @@ export function TreasureEditPage() {
 
   const hintsByTresureId = useHintByTreasureId(location.state?.treasureId);
   const notify = useNotify();
+  const [imageLink, setImageLink] = useState("");
 
   const isButtonDisabled = useMemo(() => {
     const c1 = treasure.name.trim() === "";
@@ -179,6 +184,7 @@ export function TreasureEditPage() {
       name: treasure.name,
       treasureId: treasureId,
       timeLimit: 60,
+      photoLink: isUploadedNew ? imageLink : treasureById.photoLink,
     });
   };
 
@@ -210,10 +216,52 @@ export function TreasureEditPage() {
       latitude: treasure.coordinate.lat,
     });
   };
+
+  const [isUpload, setIsUpload] = useState(false);
+
+  const uploadImageMutation = useUploadImageMutation({
+    onSuccess: (res) => {
+      setImageLink(res.data.fileName);
+      updateLocation();
+    },
+    onError: (error) => {
+      const err = formatError(error);
+      const errFormated = error as AxiosError;
+      const errorData = (errFormated.response?.data as any).error;
+      if (errorData === "jwt expired" || errFormated.response?.status === 401) {
+        setId(0);
+        setAuth(false);
+        localStorage.removeItem("access_token");
+      }
+      if (err) {
+        notify.error("Image upload is failed\n" + err);
+      }
+    },
+  });
+
+  const uploadImage = () => {
+    if (!isUploadedNew) {
+      updateLocation();
+      return;
+    }
+    if (treasure.images.length === 0) return;
+    const imageSize = Object.hasOwn(treasure.images[0], "dataURL")
+      ? treasure.images[0].file.size
+      : treasure.images[0].size;
+    const file = Object.hasOwn(treasure.images[0], "dataURL")
+      ? treasure.images[0].file
+      : treasure.images[0];
+    if (imageSize > 10000000) return;
+    const formData = new FormData();
+    formData.append("image", file);
+    uploadImageMutation.mutate(formData);
+  };
+
   if (isFetching || hintsByTresureId.isFetching) {
     return <Loader />;
   }
   if (
+    uploadImageMutation.isLoading ||
     HintCreationMutation.isLoading ||
     LocationUpdateMutation.isLoading ||
     TreasureUpdateMutation.isLoading ||
@@ -236,8 +284,18 @@ export function TreasureEditPage() {
     });
   }
 
+  const imageName = treasureById.photoLink;
+  if (
+    isUpload &&
+    treasure.images.length > 0 &&
+    !Object.hasOwn(treasure.images[0], "dataURL")
+  ) {
+    setIsUpload(false);
+  }
   return (
     <div className="bg-bgColor flex flex-row min-h-screen">
+      <StateSetter setSpecificState={() => setIsUpload(true)} />
+      <ImageDownloader imageName={imageName as string} />
       {!comingFromMap && (
         <>
           <LocationGetter
@@ -345,7 +403,7 @@ export function TreasureEditPage() {
                     <Input
                       title={"Hint: " + (index + 1).toString()}
                       value={hintName.content}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setTreasure({
                           ...treasure,
                           hints: [
@@ -357,8 +415,8 @@ export function TreasureEditPage() {
                             },
                             ...treasure.hints.slice(index + 1),
                           ],
-                        })
-                      }
+                        });
+                      }}
                     />
                   </div>
                   {index !== 0 && (
@@ -431,21 +489,27 @@ export function TreasureEditPage() {
         </div>
         <div className="flex flex-col justify-center flex-1 items-center">
           <ImageUploading value={treasure.images} onChange={onChange}>
-            {({ onImageUpload, isDragging, dragProps }) => (
+            {({ onImageUpload, dragProps }) => (
               <div {...dragProps}>
-                <img
-                  src={
-                    treasure.images.length > 0 && !isDragging
-                      ? treasure.images[0].dataURL
-                      : require("../assets/images/Photo Placeholder.png")
-                  }
-                  alt="imageUploadPlace"
-                  width={1183 / 4}
-                  height={1860 / 4}
-                />
+                {isUpload ? (
+                  <Loader height="50%" width="50%" color="#FFFFFF" />
+                ) : (
+                  <img
+                    src={
+                      treasure.images.length > 0
+                        ? !Object.hasOwn(treasure.images[0], "dataURL")
+                          ? URL.createObjectURL(treasure.images[0])
+                          : treasure.images[0].dataURL
+                        : require("../assets/images/Photo Placeholder.png")
+                    }
+                    alt="imageUploadPlace"
+                    width={1183 / 4}
+                    height={1860 / 4}
+                  />
+                )}
                 <div className="mt-8">
                   <Button size="large" onClick={onImageUpload}>
-                    Select or Drag Treasure Image
+                    Select Treasure Image
                   </Button>
                 </div>
                 <div className="mt-8">
@@ -453,7 +517,7 @@ export function TreasureEditPage() {
                     size="large"
                     disabled={isButtonDisabled}
                     HasFadeColor={isButtonDisabled}
-                    onClick={updateLocation}
+                    onClick={uploadImage}
                   >
                     Finish Production
                   </Button>
