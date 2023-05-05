@@ -2,7 +2,7 @@ import { axios } from "../react-query";
 import { GeneralRegion, Hint, LocationInfo, Treasure } from "./types";
 
 export const apiLogin = (data: { email: string; password: string }) => {
-  return axios({ url: "/user/login", method: "post", data });
+  return axios({ url: "/user/login/admin", method: "post", data });
 };
 
 export const apiGetUser = (userId: number) => {
@@ -111,8 +111,15 @@ export const apiUploadImage = (formData: FormData) => {
 
 export const apiGetLeaderboardByTreasureId = (treasureId: number) => {
   return axios({
-    url: "/treasure/"+treasureId.toString()+"/leaderboard",
+    url: "/treasure/" + treasureId.toString() + "/leaderboard",
     method: "get",
   });
 };
 
+export const apiDownloadImage = (imageName: string) => {
+  return axios({
+    url: "/image/download/" + imageName,
+    method: "get",
+    responseType: "blob",
+  });
+};
