@@ -1,46 +1,10 @@
-# Getting Started with Create React App
+# Treasure Web Admin Panel
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+<img width="45%" height="45%" alt="create_treasure" src="https://github.com/ITUMasters/treasure-web/assets/55799734/18d98e16-c7c8-4347-a25e-fe5801ede0e1">
+<img width="45%" height="45%" alt="create_region" src="https://github.com/ITUMasters/treasure-web/assets/55799734/46c3f3d6-f72d-4249-b527-d629ecdea407">
+<img width="45%" height="45%" alt="choose_treasure_location" src="https://github.com/ITUMasters/treasure-web/assets/55799734/3c3d65e7-1cfe-4a87-bc43-da18f128a758">
+<img width="45%" height="45%" alt="login" src="https://github.com/ITUMasters/treasure-web/assets/55799734/24486d12-d49d-4967-83fc-31e8dce2b6c5">
+<img width="45%" height="45%" alt="leaderboard" src="https://github.com/ITUMasters/treasure-web/assets/55799734/024f3a1f-14ee-49e0-9f1e-7ea2b52e54ec">
+<img width="45%" height="45%" alt="home" src="https://github.com/ITUMasters/treasure-web/assets/55799734/db18e507-88f6-483b-8e4f-fbb9191afef1">
+<img width="45%" height="45%" alt="edit_treasure" src="https://github.com/ITUMasters/treasure-web/assets/55799734/1cdcc7e6-d5c0-44c0-a7a4-0ca7eb9a5f25">
+<img width="45%" height="45%" alt="created_treasures" src="https://github.com/ITUMasters/treasure-web/assets/55799734/d1e48edd-d71a-49ce-a6f5-c0edae2e061c">
